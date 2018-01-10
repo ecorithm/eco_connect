@@ -1,0 +1,9 @@
+language: python
+python:
+    - "3.6"
+install:
+    - pip install . --upgrade
+script:
+    python3 -m coverage run -m pytest
+after_success:
+    coveralls
