@@ -19,7 +19,7 @@ class RequestParser:
     def tuple_parser(cls, response, data_key=None):
         try:
             result = response.json()
-        except (ValueError):
+        except ValueError:
             raise RequestParserError('Unable to parse the response.',
                                      response.text)
 
@@ -32,14 +32,15 @@ class RequestParser:
 
         parsed_result = []
 
-        if isinstance(dict, result):
+        if isinstance(result, dict):
             response_tuple = namedtuple('response_tuple', result.keys())
             return [response_tuple(**result)]
 
-        elif isinstance(list, result) and isinstance(dict, result[0]):
+        elif isinstance(result, list) and isinstance(result[0], dict):
             response_tuple = namedtuple('response_tuple', result[0].keys())
             for row in result:
                 parsed_result.append(response_tuple(**row))
+            return parsed_result
 
         else:
             raise RequestParserError('Unable to parse the response.')
@@ -56,5 +57,5 @@ class RequestParser:
                    file_name='data.csv'):
         result_df = cls.pandas_parser(response, data_key=data_key)
         os.makedirs(download_folder, exist_ok=True)
-        result_df.to_csv(file_name, index=None)
+        result_df.to_csv(download_folder + file_name, index=None)
         return result_df
