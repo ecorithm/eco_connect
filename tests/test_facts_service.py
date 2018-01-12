@@ -3,12 +3,12 @@ from collections import namedtuple
 import pytest
 import pandas as pd
 
-from eco_connect.connectors.facts_service import FactsService
+from eco_connect import FactsService
 from eco_connect.src.errors import RequestParserError
 
 
 class TestFactsService:
-    MODULE_PATH = 'eco_connect.connectors.facts_service'
+    MODULE_PATH = 'eco_connect'
     CLASS_PATH = MODULE_PATH + '.FactsService'\
 
 
