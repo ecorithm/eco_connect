@@ -1,4 +1,6 @@
 from collections import namedtuple
+from operator import attrgetter
+
 import os
 
 import pandas as pd
@@ -86,35 +88,30 @@ class FactsService(BaseRequest):
         return self._format_response(response, fact_parser, parser_args)
 
     def _tuple_fact_parser(self, response):
-        result = response.json()
         try:
             result = response.json()
         except (ValueError):
             raise RequestParserError('Unable to parse the response.',
                                      response.text)
 
-        try:
-            result = result['data']
-        except KeyError:
-            raise RequestParserError('Unable to parse the response.',
-                                     result)
+        result = result['data']
 
-        tuple_names = list(result[0].values()['data'].keys()) +\
-            list(result[0].values()['meta'].keys())
+        tuple_names = ['fact_time', 'fact_value'] +\
+            list(list(result.values())[0]['meta'].keys())
 
         response_tuple = namedtuple('response_tuple', tuple_names)
         parsed_result = []
         for dpoint_id, data in result.items():
             meta = data['meta']
             fact_data = data['data']
-            for fact in fact_data:
-                row = {'datetime': fact.keys(), 'fact_value': fact.values()}
+            for fact_time, fact_value in fact_data.items():
+                row = {'fact_time': fact_time, 'fact_value': fact_value}
                 row.update(meta)
                 parsed_result.append(response_tuple(**row))
-        return parsed_result
+        return sorted(parsed_result, key=attrgetter('eco_point_id'))
 
     def _pandas_fact_parser(self, response):
-        tuple_response = self._tuples_fact_parser(response)
+        tuple_response = self._tuple_fact_parser(response)
         return pd.DataFrame(tuple_response)
 
     def _csv_fact_parser(cls, response,
@@ -122,5 +119,5 @@ class FactsService(BaseRequest):
                          file_name):
         result_df = cls._pandas_fact_parser(response)
         os.makedirs(download_folder, exist_ok=True)
-        result_df.to_csv(file_name, index=None)
-        return result_df
+        result_df.to_csv(download_folder + file_name, index=None)
+        return result_df.to_csv

@@ -1,6 +1,10 @@
+from collections import namedtuple
+
 import pytest
+import pandas as pd
 
 from eco_connect.connectors.facts_service import FactsService
+from eco_connect.src.errors import RequestParserError
 
 
 class TestFactsService:
@@ -328,17 +332,243 @@ class TestFactsService:
                                     end_date,
                                     result_format='arrow')
 
-    def test__tuple_fact_parser(self):
-        pass
+    def test__tuple_fact_parser(self, mocker, facts_service):
+        mock_response = mocker.Mock()
+        mock_response.json.return_value = {"data": {
+                                           "1": {
+                                               "data": {
+                                                   "2017-08-01 00:00": 67.5,
+                                                   "2017-08-01 00:05": 68.5},
+                                               "meta": {
+                                                   "display_name": "SpaceTemp",
+                                                   "eco_point_id": 1,
+                                                   "native_name":
+                                                   "UCSB/275/VAV_301/"
+                                                   "NAE11/N2-2.275-VAV-"
+                                                   "301.ZN-T",
+                                                   "equipment": "VAV-301",
+                                                   "equipment_type": "VAV",
+                                                   "point_class":
+                                                   "SpaceAirTemperature"}},
+                                           "2": {
+                                               "data": {
+                                                   "2017-08-01 00:00": 0,
+                                                   "2017-08-01 00:05": 100},
+                                               "meta": {
+                                                   "display_name": "Cooling",
+                                                   "eco_point_id": 2,
+                                                   "native_name":
+                                                   "UCSB/275/VAV_301/"
+                                                   "NAE11/N2-2.275-VAV-301.CV",
+                                                   "equipment": "VAV_301",
+                                                   "equipment_type": "VAV",
+                                                   "point_class":
+                                                   "CoolingCoilUnitFeedback"}}
+                                           }}
+        tuple_names = ['fact_time', 'fact_value', 'display_name',
+                       'eco_point_id',
+                       'native_name', 'equipment', 'equipment_type',
+                       'point_class']
+        expected_named_tuple = namedtuple('response_tuple', tuple_names)
 
-    def test__tuple_fact_parser_bad_json(self):
-        pass
+        expected_result = [
+            expected_named_tuple(**{
+                "display_name": "SpaceTemp",
+                "eco_point_id": 1,
+                "native_name": "UCSB/275/VAV_301/"
+                "NAE11/N2-2.275-VAV-301.ZN-T",
+                "equipment": "VAV-301",
+                "equipment_type": "VAV",
+                "point_class":
+                "SpaceAirTemperature"}, **{'fact_time': "2017-08-01 00:00",
+                                           'fact_value': 67.5}),
 
-    def test__tuple_fact_parser_bad_key(self):
-        pass
+            expected_named_tuple(**{
+                "display_name": "SpaceTemp",
+                "eco_point_id": 1,
+                "native_name": "UCSB/275/VAV_301/"
+                "NAE11/N2-2.275-VAV-301.ZN-T",
+                "equipment": "VAV-301",
+                "equipment_type": "VAV",
+                "point_class":
+                "SpaceAirTemperature"}, **{'fact_time': "2017-08-01 00:05",
+                                           'fact_value': 68.5}),
 
-    def test__pandas_fact_parser(self):
-        pass
+            expected_named_tuple(**{
+                "display_name": "Cooling",
+                "eco_point_id": 2,
+                "native_name": "UCSB/275/VAV_301/"
+                "NAE11/N2-2.275-VAV-301.CV",
+                "equipment": "VAV_301",
+                "equipment_type": "VAV",
+                "point_class": "CoolingCoilUnit"
+                "Feedback"}, **{'fact_time': "2017-08-01 00:00",
+                                'fact_value': 0}),
 
-    def test__csv_fact_parser(self):
-        pass
+            expected_named_tuple(**{
+                "display_name": "Cooling",
+                "eco_point_id": 2,
+                "native_name": "UCSB/275/VAV_301/"
+                "NAE11/N2-2.275-VAV-301.CV",
+                "equipment": "VAV_301",
+                "equipment_type": "VAV",
+                "point_class": "CoolingCoilUnit"
+                "Feedback"}, **{'fact_time': "2017-08-01 00:05",
+                                'fact_value': 100})]
+        result = facts_service._tuple_fact_parser(mock_response)
+        assert len(result) == len(expected_result)
+        assert result[0] == expected_result[0]
+
+    def test__tuple_fact_parser_bad_json(self, mocker, facts_service):
+        mock_response = mocker.Mock()
+        mock_response.json.side_effect = ValueError
+        with pytest.raises(RequestParserError):
+            facts_service._tuple_fact_parser(mock_response)
+
+    def test__pandas_fact_parser(self, mocker, facts_service):
+        mock__tuples_fact_parser = mocker.patch.object(facts_service,
+                                                       '_tuple_fact_parser')
+        tuple_names = ['fact_time', 'fact_value', 'display_name',
+                       'eco_point_id',
+                       'native_name', 'equipment', 'equipment_type',
+                       'point_class']
+        expected_named_tuple = namedtuple('response_tuple', tuple_names)
+
+        expected_result = [
+            expected_named_tuple(**{
+                "display_name": "SpaceTemp",
+                "eco_point_id": 1,
+                "native_name": "UCSB/275/VAV_301/"
+                "NAE11/N2-2.275-VAV-301.ZN-T",
+                "equipment": "VAV-301",
+                "equipment_type": "VAV",
+                "point_class":
+                "SpaceAirTemperature"}, **{'fact_time': "2017-08-01 00:00",
+                                           'fact_value': 67.5}),
+
+            expected_named_tuple(**{
+                "display_name": "SpaceTemp",
+                "eco_point_id": 1,
+                "native_name": "UCSB/275/VAV_301/"
+                "NAE11/N2-2.275-VAV-301.ZN-T",
+                "equipment": "VAV-301",
+                "equipment_type": "VAV",
+                "point_class":
+                "SpaceAirTemperature"}, **{'fact_time': "2017-08-01 00:05",
+                                           'fact_value': 68.5}),
+
+            expected_named_tuple(**{
+                "display_name": "Cooling",
+                "eco_point_id": 2,
+                "native_name": "UCSB/275/VAV_301/"
+                "NAE11/N2-2.275-VAV-301.CV",
+                "equipment": "VAV_301",
+                "equipment_type": "VAV",
+                "point_class": "CoolingCoilUnit"
+                "Feedback"}, **{'fact_time': "2017-08-01 00:00",
+                                'fact_value': 0}),
+
+            expected_named_tuple(**{
+                "display_name": "Cooling",
+                "eco_point_id": 2,
+                "native_name": "UCSB/275/VAV_301/"
+                "NAE11/N2-2.275-VAV-301.CV",
+                "equipment": "VAV_301",
+                "equipment_type": "VAV",
+                "point_class": "CoolingCoilUnit"
+                "Feedback"}, **{'fact_time': "2017-08-01 00:05",
+                                'fact_value': 100})]
+        mock__tuples_fact_parser.return_value = expected_result
+        mock_response = mocker.Mock()
+        result = facts_service._pandas_fact_parser(mock_response)
+        expected_df = pd.DataFrame(columns=tuple_names,
+                                   data=[[
+                                       '2017-08-01 00:00', 67.5,
+                                       'SpaceTemp', 1,
+                                       'UCSB/275/VAV_301/NAE11/N2-2.'
+                                       '275-VAV-301.ZN-T', 'VAV-301', 'VAV',
+                                       'SpaceAirTemperature'],
+                                       ['2017-08-01 00:05', 68.5,
+                                        'SpaceTemp', 1,
+                                        'UCSB/275/VAV_301/NAE11/N2-2.275'
+                                        '-VAV-301.ZN-T', 'VAV-301', 'VAV',
+                                        'SpaceAirTemperature'],
+                                       ['2017-08-01 00:00', 0.0, 'Cooling', 2,
+                                        'UCSB/275/VAV_301/NAE11/'
+                                        'N2-2.275-VAV-301.CV',
+                                        'VAV_301',
+                                        'VAV',
+                                        'CoolingCoilUnitFeedback'],
+                                       ['2017-08-01 00:05', 100.0,
+                                        'Cooling', 2,
+                                        'UCSB/275/VAV_301/NAE11/N2-2.'
+                                        '275-VAV-301.CV', 'VAV_301', 'VAV',
+                                        'CoolingCoilUnitFeedback']])
+
+        pd.testing.assert_frame_equal(result, expected_df)
+
+    def test__csv_fact_parser(self, mocker, facts_service):
+        mock_response = mocker.Mock()
+        download_folder = '/'
+        file_name = 'data.csv'
+        make_dirs = mocker.patch(self.MODULE_PATH + '.os.makedirs')
+
+        tuple_names = ['fact_time', 'fact_value', 'display_name',
+                       'eco_point_id',
+                       'native_name', 'equipment', 'equipment_type',
+                       'point_class']
+        expected_named_tuple = namedtuple('response_tuple', tuple_names)
+
+        expected_result = [
+            expected_named_tuple(**{
+                "display_name": "SpaceTemp",
+                "eco_point_id": 1,
+                "native_name": "UCSB/275/VAV_301/"
+                "NAE11/N2-2.275-VAV-301.ZN-T",
+                "equipment": "VAV-301",
+                "equipment_type": "VAV",
+                "point_class":
+                "SpaceAirTemperature"}, **{'fact_time': "2017-08-01 00:00",
+                                           'fact_value': 67.5}),
+
+            expected_named_tuple(**{
+                "display_name": "SpaceTemp",
+                "eco_point_id": 1,
+                "native_name": "UCSB/275/VAV_301/"
+                "NAE11/N2-2.275-VAV-301.ZN-T",
+                "equipment": "VAV-301",
+                "equipment_type": "VAV",
+                "point_class":
+                "SpaceAirTemperature"}, **{'fact_time': "2017-08-01 00:05",
+                                           'fact_value': 68.5}),
+
+            expected_named_tuple(**{
+                "display_name": "Cooling",
+                "eco_point_id": 2,
+                "native_name": "UCSB/275/VAV_301/"
+                "NAE11/N2-2.275-VAV-301.CV",
+                "equipment": "VAV_301",
+                "equipment_type": "VAV",
+                "point_class": "CoolingCoilUnit"
+                "Feedback"}, **{'fact_time': "2017-08-01 00:00",
+                                'fact_value': 0}),
+
+            expected_named_tuple(**{
+                "display_name": "Cooling",
+                "eco_point_id": 2,
+                "native_name": "UCSB/275/VAV_301/"
+                "NAE11/N2-2.275-VAV-301.CV",
+                "equipment": "VAV_301",
+                "equipment_type": "VAV",
+                "point_class": "CoolingCoilUnit"
+                "Feedback"}, **{'fact_time': "2017-08-01 00:05",
+                                'fact_value': 100})]
+
+        mock_df = pd.DataFrame(expected_result)
+        mock_df.to_csv = mocker.Mock()
+        mocker.patch.object(facts_service, '_pandas_fact_parser',
+                            return_value=mock_df)
+        facts_service._csv_fact_parser(mock_response,
+                                       download_folder, file_name)
+        make_dirs.assert_called_once_with('/', exist_ok=True)
+
