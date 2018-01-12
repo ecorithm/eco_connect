@@ -114,3 +114,18 @@ class TestResultParser:
         mock_df.to_csv.assert_called_once_with('root/downloads/data.csv',
                                                index=None)
         pandas_parser.assert_called_once_with(mock_response, data_key='data')
+
+    def test_csv_parser_os_errror(self, mocker):
+        mock_response = mocker.Mock()
+        mock_data_key = 'data'
+        mock_os = mocker.patch(self.MODULE_PATH + '.os')
+        download_folder = 'root/downloads/'
+
+        mock_df = mocker.Mock()
+        mocker.patch(self.CLASS_PATH + '.pandas_parser',
+                     return_value=mock_df)
+        mock_os.makedirs.side_effect = OSError
+
+        with pytest.raises(ValueError):
+            RequestParser.csv_parser(mock_response, data_key=mock_data_key,
+                                     download_folder=download_folder)

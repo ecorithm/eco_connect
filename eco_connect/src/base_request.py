@@ -1,59 +1,66 @@
+import os
+import requests
+
 from eco_connect.src.errors import InvalidRequest
 from eco_connect.src.request_parser import RequestParser
-
-import requests
+from eco_connect.src.credentials_factory import CredentialsFactory
 
 
 class BaseRequest:
 
-    @classmethod
-    def get(cls, url, data={}, auth=()):
-        kwargs = cls._format_kwargs(data=data,
-                                    auth=auth,
-                                    encode_type='querystring')
+    def __init__(self):
+        self._set_credentials()
+
+    def _validate_env(self, environment_name):
+        environment_name = environment_name.lower()
+        valid_envs = ['prod', 'qa']
+        if environment_name in valid_envs:
+            return environment_name
+        else:
+            raise ValueError(f'`{environment_name}` is invalid! Chose from '
+                             f'{valid_envs}')
+
+    def _set_credentials(self):
+        self.credentials = CredentialsFactory.get_eco_credentials()
+
+    def get(self, url, data={}):
+        kwargs = self._format_kwargs(data=data,
+                                     encode_type='querystring')
         return requests.get(url, **kwargs)
 
-    @classmethod
-    def put(cls, url, data={}, encode_type='form', auth=()):
-        kwargs = cls._format_kwargs(data=data,
-                                    auth=auth,
-                                    encode_type=encode_type)
+    def put(self, url, data={}, encode_type='form'):
+        kwargs = self._format_kwargs(data=data,
+                                     encode_type=encode_type)
         return requests.put(url, **kwargs)
 
-    @classmethod
-    def post(cls, url, data={}, encode_type='form', auth=()):
-        kwargs = cls._format_kwargs(data=data,
-                                    auth=auth,
-                                    encode_type=encode_type)
+    def post(self, url, data={}, encode_type='form'):
+        kwargs = self._format_kwargs(data=data,
+                                     encode_type=encode_type)
         return requests.post(url, **kwargs)
 
-    @classmethod
-    def delete(cls, url, data={}, encode_type='form', auth=()):
-        kwargs = cls._format_kwargs(data=data,
-                                    auth=auth,
-                                    encode_type=encode_type)
+    def delete(self, url, data={}, encode_type='form'):
+        kwargs = self._format_kwargs(data=data,
+                                     encode_type=encode_type)
         return requests.delete(url, **kwargs)
 
-    @classmethod
-    def _format_kwargs(cls, data, auth, encode_type):
+    def _format_kwargs(self, data, encode_type):
         if encode_type.lower() == 'querystring':
-            return {'auth': auth, 'params': data}
+            return {'auth': self.credentials, 'params': data}
 
         elif encode_type.lower() == 'form':
-            return {'auth': auth, 'data': data}
+            return {'auth': self.credentials, 'data': data}
 
         elif encode_type.lower() == 'json':
-            return {'auth': auth, 'json': data}
+            return {'auth': self.credentials, 'json': data}
 
         else:
             raise ValueError(f'({encode_type}) is not valid!')
 
-    @classmethod
     def _format_response(self, response,
-                         result_parser=RequestParser.json_parser,
+                         parser=RequestParser.json_parser,
                          parser_args={}):
         if response.status_code == 200 or response.status_code == 201:
-            return result_parser(response, **parser_args)
+            return parser(response, **parser_args)
 
         elif response.status_code == 401:
             print('Invalid credentials. Did you remeber to set you '
@@ -67,3 +74,27 @@ class BaseRequest:
                 raise InvalidRequest(response.json(), response.status_code)
             except ValueError:
                 raise InvalidRequest(response.text, response.status_code)
+
+    def _get_parser(self, result_format, data_key='data',
+                    download_folder=os.path.expanduser('~') + '/downloads',
+                    file_name='data.csv'):
+        parser = {'parser': None, 'parser_args': {}}
+        if result_format.lower() == 'pandas':
+            parser['parser_args'] = {'data_key': data_key}
+            parser['parser'] = RequestParser.pandas_parser
+        elif result_format.lower() == 'json':
+            parser['parser'] = RequestParser.json_parser
+            parser['parser_args'] = {}
+        elif result_format.lower() == 'tuple':
+            parser['parser'] = RequestParser.tuple_parser
+            parser['parser_args'] = {'data_key': data_key}
+        elif result_format.lower() == 'csv':
+            parser['parser'] = RequestParser.csv_parser
+            parser['parser_args'] = {'data_key': data_key,
+                                     'download_folder': download_folder,
+                                     'file_name': file_name}
+        else:
+            raise ValueError(f'{result_format} is not valid!.'
+                             ' Valid formats are (pandas, json, tuple, csv)')
+
+        return parser

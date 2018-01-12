@@ -2,13 +2,21 @@ import pytest
 
 from eco_connect.src.base_request import BaseRequest
 from eco_connect.src.errors import InvalidRequest
+from eco_connect.src.request_parser import RequestParser
 
 
-class TestBaseRequest:
+class TestBaseRequest():
     MODULE_PATH = 'eco_connect.src.base_request'
     CLASS_PATH = MODULE_PATH + '.BaseRequest'
 
-    def test_get(self, mocker):
+    @pytest.fixture
+    def base_request(self, mocker):
+        mocker.patch(self.CLASS_PATH + '._set_credentials')
+        base_request = BaseRequest()
+        base_request.credentials = ('username', 'password')
+        return base_request
+
+    def test_get(self, mocker, base_request):
         mock_format_kwargs = mocker.patch(self.CLASS_PATH + '._format_kwargs')
         mock_format_kwargs.return_value = {'arg1': 1, 'arg2': 2}
         mock_request_get = mocker.patch(self.MODULE_PATH + '.requests.get',
@@ -17,16 +25,14 @@ class TestBaseRequest:
         mock_url = 'mock-get-url'
         data = {'param1': 1,
                 'param2': 2}
-        auth = ('username', 'password')
 
-        result = BaseRequest.get(mock_url, data, auth)
+        result = base_request.get(mock_url, data)
         mock_format_kwargs.assert_called_once_with(data=data,
-                                                   auth=auth,
                                                    encode_type='querystring')
         mock_request_get.assert_called_once_with(mock_url, arg1=1, arg2=2)
         assert result == 'response'
 
-    def test_put(self, mocker):
+    def test_put(self, mocker, base_request):
         mock_format_kwargs = mocker.patch(self.CLASS_PATH + '._format_kwargs')
         mock_format_kwargs.return_value = {'arg1': 1, 'arg2': 2}
         mock_request_put = mocker.patch(self.MODULE_PATH + '.requests.put',
@@ -35,18 +41,16 @@ class TestBaseRequest:
         mock_url = 'mock-get-url'
         data = {'param1': 1,
                 'param2': 2}
-        auth = ('username', 'password')
 
-        result = BaseRequest.put(url=mock_url,
-                                 data=data, auth=auth,
-                                 encode_type='querystring')
+        result = base_request.put(url=mock_url,
+                                  data=data,
+                                  encode_type='querystring')
         mock_format_kwargs.assert_called_once_with(data=data,
-                                                   auth=auth,
                                                    encode_type='querystring')
         mock_request_put.assert_called_once_with(mock_url, arg1=1, arg2=2)
         assert result == 'response'
 
-    def test_post(self, mocker):
+    def test_post(self, mocker, base_request):
         mock_format_kwargs = mocker.patch(self.CLASS_PATH + '._format_kwargs')
         mock_format_kwargs.return_value = {'arg1': 1, 'arg2': 2}
         mock_request_post = mocker.patch(self.MODULE_PATH + '.requests.post',
@@ -55,18 +59,17 @@ class TestBaseRequest:
         mock_url = 'mock-get-url'
         data = {'param1': 1,
                 'param2': 2}
-        auth = ('username', 'password')
 
-        result = BaseRequest.post(url=mock_url,
-                                  data=data, auth=auth,
-                                  encode_type='querystring')
+        result = base_request.post(url=mock_url,
+                                   data=data,
+                                   encode_type='querystring')
         mock_format_kwargs.assert_called_once_with(data=data,
-                                                   auth=auth,
+
                                                    encode_type='querystring')
         mock_request_post.assert_called_once_with(mock_url, arg1=1, arg2=2)
         assert result == 'response'
 
-    def test_delete(self, mocker):
+    def test_delete(self, mocker, base_request):
         mock_format_kwargs = mocker.patch(self.CLASS_PATH + '._format_kwargs')
         mock_format_kwargs.return_value = {'arg1': 1, 'arg2': 2}
         mock_request_delete = mocker.patch(
@@ -76,55 +79,53 @@ class TestBaseRequest:
         mock_url = 'mock-get-url'
         data = {'param1': 1,
                 'param2': 2}
-        auth = ('username', 'password')
 
-        result = BaseRequest.delete(url=mock_url,
-                                    data=data, auth=auth,
-                                    encode_type='querystring')
+        result = base_request.delete(url=mock_url,
+                                     data=data,
+                                     encode_type='querystring')
         mock_format_kwargs.assert_called_once_with(data=data,
-                                                   auth=auth,
+
                                                    encode_type='querystring')
         mock_request_delete.assert_called_once_with(mock_url, arg1=1, arg2=2)
         assert result == 'response'
 
-    def test__format_kwargs_querystring(self, mocker):
+    def test__format_kwargs_querystring(self, mocker, base_request):
         mock_data = {'item1': 1, 'item2': 2}
         auth = ('username', 'password')
         encode_type = 'querystring'
-        result = BaseRequest._format_kwargs(mock_data, auth, encode_type)
+        result = base_request._format_kwargs(mock_data, encode_type)
         assert result == {'auth': auth, 'params': mock_data}
 
-    def test__format_kwargs_form(self, mocker):
+    def test__format_kwargs_form(self, mocker, base_request):
         mock_data = {'item1': 1, 'item2': 2}
         auth = ('username', 'password')
         encode_type = 'form'
-        result = BaseRequest._format_kwargs(mock_data, auth, encode_type)
+        result = base_request._format_kwargs(mock_data, encode_type)
         assert result == {'auth': auth, 'data': mock_data}
 
-    def test__format_kwargs_json(self, mocker):
+    def test__format_kwargs_json(self, mocker, base_request):
         mock_data = {'item1': 1, 'item2': 2}
         auth = ('username', 'password')
         encode_type = 'json'
-        result = BaseRequest._format_kwargs(mock_data, auth, encode_type)
+        result = base_request._format_kwargs(mock_data, encode_type)
         assert result == {'auth': auth, 'json': mock_data}
 
-    def test__format_kwargs_exception(self, mocker):
+    def test__format_kwargs_exception(self, mocker, base_request):
         mock_data = {}
-        auth = ()
         encode_type = 'invalid'
         with pytest.raises(ValueError):
-            BaseRequest._format_kwargs(mock_data, auth, encode_type)
+            base_request._format_kwargs(mock_data, encode_type)
 
-    def test__format_response_200(self, mocker):
+    def test__format_response_200(self, mocker, base_request):
         mock_response = mocker.Mock()
         mock_result_parser = mocker.Mock()
         mock_result_parser.return_value = 'parsed_result'
         parser_args = {'arg1': 1, 'arg2': 2}
         mock_response.status_code = 200
 
-        result = BaseRequest._format_response(
+        result = base_request._format_response(
             mock_response,
-            result_parser=mock_result_parser,
+            parser=mock_result_parser,
             parser_args=parser_args)
         mock_result_parser.assert_called_once_with(mock_response,
                                                    arg1=1,
@@ -132,16 +133,16 @@ class TestBaseRequest:
 
         assert result == 'parsed_result'
 
-    def test__format_response_201(self, mocker):
+    def test__format_response_201(self, mocker, base_request):
         mock_response = mocker.Mock()
         mock_result_parser = mocker.Mock()
         mock_result_parser.return_value = 'parsed_result'
         parser_args = {'arg1': 1, 'arg2': 2}
         mock_response.status_code = 200
 
-        result = BaseRequest._format_response(
+        result = base_request._format_response(
             mock_response,
-            result_parser=mock_result_parser,
+            parser=mock_result_parser,
             parser_args=parser_args)
         mock_result_parser.assert_called_once_with(mock_response,
                                                    arg1=1,
@@ -149,7 +150,7 @@ class TestBaseRequest:
 
         assert result == 'parsed_result'
 
-    def test__format_response_400_json(self, mocker):
+    def test__format_response_400_json(self, mocker, base_request):
         mock_response = mocker.Mock()
         mock_result_parser = mocker.Mock()
         mock_response.json.return_value = {'error': 'bad request'}
@@ -158,13 +159,13 @@ class TestBaseRequest:
         mock_response.status_code = 400
 
         with pytest.raises(InvalidRequest):
-            BaseRequest._format_response(
+            base_request._format_response(
                 mock_response,
-                result_parser=mock_result_parser,
+                parser=mock_result_parser,
                 parser_args=parser_args)
             mock_response.json.asset_called_once()
 
-    def test__format_response_400_text(self, mocker):
+    def test__format_response_400_text(self, mocker, base_request):
         mock_response = mocker.Mock()
         mock_result_parser = mocker.Mock()
         mock_response.json.side_effect = ValueError
@@ -174,24 +175,69 @@ class TestBaseRequest:
         mock_response.status_code = 400
 
         with pytest.raises(InvalidRequest):
-            BaseRequest._format_response(
+            base_request._format_response(
                 mock_response,
-                result_parser=mock_result_parser,
+                parser=mock_result_parser,
                 parser_args=parser_args)
             mock_response.text.asset_called_once()
 
-    def test__format_response_401_text(self, mocker):
+    def test__format_response_401_text(self, mocker, base_request):
         mock_response = mocker.Mock()
         mock_result_parser = mocker.Mock()
         mock_response.json.side_effect = ValueError
         mock_response.text.return_value = 'error'
         mock_result_parser.return_value = 'parsed_result'
-        parser_args = {'arg1': 1, 'arg2': 2}
         mock_response.status_code = 401
 
         with pytest.raises(InvalidRequest):
-            BaseRequest._format_response(
+            base_request._format_response(
                 mock_response,
-                result_parser=mock_result_parser,
-                parser_args=parser_args)
+                parser=mock_result_parser)
             mock_response.text.asset_called_once()
+
+    def test__set_credentials(self, mocker):
+        get_eco_credentials = mocker.patch(
+            self.MODULE_PATH + '.CredentialsFactory.get_eco_credentials',
+            return_value=1)
+        br = BaseRequest()
+        br._set_credentials
+        assert br.credentials == 1
+        get_eco_credentials.call_count == 2
+
+    def test_get_parser_pandas(self, base_request):
+        result_format = 'pandas'
+        data_key = 'data-key'
+        parser = base_request._get_parser(result_format, data_key=data_key)
+        assert parser['parser'] == RequestParser.pandas_parser
+        assert parser['parser_args'] == {'data_key': data_key}
+
+    def test_get_parser_csv(self, base_request):
+        result_format = 'csv'
+        data_key = 'data-key'
+        download_folder = 'downloads'
+        file_name = 'data.csv'
+        parser = base_request._get_parser(
+            result_format, data_key=data_key, download_folder=download_folder,
+            file_name=file_name)
+        assert parser['parser'] == RequestParser.csv_parser
+        assert parser['parser_args'] == {'data_key': data_key,
+                                         'download_folder': download_folder,
+                                         'file_name': file_name}
+
+    def test_get_parser_tuple(self, base_request):
+        result_format = 'tuple'
+        data_key = 'data-key'
+        parser = base_request._get_parser(result_format, data_key=data_key)
+        assert parser['parser'] == RequestParser.tuple_parser
+        assert parser['parser_args'] == {'data_key': data_key}
+
+    def test_get_parser_json(self, base_request):
+        result_format = 'json'
+        parser = base_request._get_parser(result_format)
+        assert parser['parser'] == RequestParser.json_parser
+        assert parser['parser_args'] == {}
+
+    def test_get_parser_value_error(self, base_request):
+        result_format = 'arrow'
+        with pytest.raises(ValueError):
+            base_request._get_parser(result_format)

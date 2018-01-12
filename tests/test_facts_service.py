@@ -18,6 +18,16 @@ class TestFactsService:
         facts_service.credentials = ('user', 'password')
         return facts_service
 
+    def test__validate_env(self, mocker, facts_service):
+        environment_name = 'PROD'
+        result = facts_service._validate_env(environment_name)
+        assert result == 'prod'
+
+    def test__validate_env_fail(self, mocker, facts_service):
+        environment_name = 'production'
+        with pytest.raises(ValueError):
+            facts_service._validate_env(environment_name)
+
     def test__init__(self, mocker):
         _validate_env = mocker.patch(self.CLASS_PATH + '._validate_env')
         _validate_env.return_value = 'prod'
@@ -29,25 +39,6 @@ class TestFactsService:
                                           '/api/v1/')
         _validate_env.assert_called_once_with(environment_name='prod')
         _get_credentials.assert_called_once()
-
-    def test__validate_env(self, mocker, facts_service):
-        environment_name = 'PROD'
-        result = facts_service._validate_env(environment_name)
-        assert result == 'prod'
-
-    def test__validate_env_fail(self, mocker, facts_service):
-        environment_name = 'production'
-        with pytest.raises(ValueError):
-            facts_service._validate_env(environment_name)
-
-    def test__set_credentials(self, mocker, facts_service):
-        get_eco_credentials = mocker.patch(
-            self.MODULE_PATH + '.CredentialsFactory.get_eco_credentials')
-        get_eco_credentials.return_value = 1
-        mocker.patch(self.CLASS_PATH, )
-        facts_service._set_credentials()
-        get_eco_credentials.assert_called_once()
-        assert facts_service.credentials == 1
 
     def test_get_facts_json(self, mocker, facts_service):
         building_id = 1
@@ -113,8 +104,7 @@ class TestFactsService:
                                            'display_name_expression':
                                            display_name_expression,
                                            'native_name_expression':
-                                           native_name_expression},
-                                     auth=('user', 'password'))
+                                           native_name_expression})
 
     def test_get_facts_pandas(self, mocker, facts_service):
         building_id = 1
@@ -180,8 +170,7 @@ class TestFactsService:
                                            'display_name_expression':
                                            display_name_expression,
                                            'native_name_expression':
-                                           native_name_expression},
-                                     auth=('user', 'password'))
+                                           native_name_expression})
 
     def test_get_facts_tuple(self, mocker, facts_service):
         building_id = 1
@@ -247,8 +236,7 @@ class TestFactsService:
                                            'display_name_expression':
                                            display_name_expression,
                                            'native_name_expression':
-                                           native_name_expression},
-                                     auth=('user', 'password'))
+                                           native_name_expression})
 
     def test_get_facts_csv(self, mocker, facts_service):
         building_id = 1
@@ -319,8 +307,7 @@ class TestFactsService:
                                            'display_name_expression':
                                            display_name_expression,
                                            'native_name_expression':
-                                           native_name_expression},
-                                     auth=('user', 'password'))
+                                           native_name_expression})
 
     def test_get_facts_value_error(self, mocker, facts_service):
         building_id = 1
@@ -572,29 +559,121 @@ class TestFactsService:
                                        download_folder, file_name)
         make_dirs.assert_called_once_with('/', exist_ok=True)
 
+    def test__csv_fact_parser_os_error(self, mocker, facts_service):
+        mock_response = mocker.Mock()
+        download_folder = '/'
+        file_name = 'data.csv'
+        make_dirs = mocker.patch(self.MODULE_PATH + '.os.makedirs')
+        make_dirs.side_effect = OSError
+        mocker.patch.object(facts_service, '_pandas_fact_parser')
+        with pytest.raises(ValueError):
+            facts_service._csv_fact_parser(mock_response,
+                                           download_folder, file_name)
+            make_dirs.assert_called_once_with('/', exist_ok=True)
+
     def test_get_avg_facts(cls, facts_service):
         with pytest.raises(NotImplementedError):
             facts_service.get_avg_facts()
 
-    def test_put_facts(cls, facts_service):
-        with pytest.raises(NotImplementedError):
-            facts_service.put_facts()
+    def test_put_facts(cls, mocker, facts_service):
+        mock_put_facts = pd.DataFrame(columns=['native_name',
+                                               'fact_value',
+                                               'fact_time'],
+                                      data=[['native_name-1',
+                                             1,
+                                             '2017-12-20 00:00'],
+                                            ['native_name-2',
+                                             2,
+                                             '2017-12-21 00:00']])
+        mock_response = mocker.Mock()
+        mock_put = mocker.patch.object(facts_service, 'put',
+                                       return_value=mock_response)
+        result = facts_service.put_facts(26, mock_put_facts)
+        mock_put.assert_called_once_with(
+            'https://facts.prod.ecorithm.com/api/v1/building/26/facts',
+            data=[{'native_name': 'native_name-1',
+                   'fact_value': 1,
+                   'fact_time': '2017-12-20 00:00'},
+                  {'native_name': 'native_name-2',
+                   'fact_value': 2,
+                   'fact_time': '2017-12-21 00:00'}],
+            encode_type='json')
+        assert result == mock_response
 
-    def test_get_buildings(cls, facts_service):
-        with pytest.raises(NotImplementedError):
-            facts_service.get_buildings()
+    def test_get_buildings(self, mocker, facts_service):
+        building_id = 1
+        is_active = True
+        result_format = 'pandas'
+        download_folder = '/downloads/'
+        file_name = 'building.csv'
+        expected_url = ('https://facts.prod.ecorithm.com/api/'
+                        'v1/buildings')
+        mock_get = mocker.patch.object(facts_service, 'get',
+                                       return_value='mock-response')
+        params = {'building_id': building_id, 'is_active': is_active}
+        mock__get_parser = mocker.patch.object(facts_service, '_get_parser',
+                                               return_value={'parser':
+                                                             'mock-parser',
+                                                             'parser_args':
+                                                             {'arg': 1}})
+        mock__format_response = mocker.patch.object(facts_service,
+                                                    '_format_response',
+                                                    return_value=('formated'
+                                                                  '-result'))
+        result = facts_service.get_buildings(building_id, is_active,
+                                             result_format, download_folder,
+                                             file_name)
+        mock_get.assert_called_once_with(expected_url, data=params)
+        mock__get_parser.assert_called_once_with('pandas', data_key='data',
+                                                 download_folder=(
+                                                     download_folder),
+                                                 file_name=file_name)
+        mock__format_response.assert_called_once_with('mock-response',
+                                                      parser='mock-parser',
+                                                      parser_args={'arg': 1})
+        assert result == 'formated-result'
 
     def test_put_buildings(cls, facts_service):
         with pytest.raises(NotImplementedError):
-            facts_service.put_buildings()
+            facts_service.put_building()
 
-    def test_delete_buildings(cls, facts_service):
+    def test_delete_building(cls, facts_service):
         with pytest.raises(NotImplementedError):
-            facts_service.delete_buildings()
+            facts_service.delete_building()
 
-    def test_get_point_classes(cls, facts_service):
-        with pytest.raises(NotImplementedError):
-            facts_service.get_point_classes()
+    def test_get_point_classes(self, mocker, facts_service):
+        point_class = 'SpaceAirTemperature'
+        is_active = True
+        result_format = 'pandas'
+        download_folder = '/downloads/'
+        file_name = 'building.csv'
+        expected_url = ('https://facts.prod.ecorithm.com/api/'
+                        'v1/point-classes')
+        mock_get = mocker.patch.object(facts_service, 'get',
+                                       return_value='mock-response')
+        params = {'point_class': point_class, 'is_active': is_active}
+        mock__get_parser = mocker.patch.object(facts_service, '_get_parser',
+                                               return_value={'parser':
+                                                             'mock-parser',
+                                                             'parser_args':
+                                                             {'arg': 1}})
+        mock__format_response = mocker.patch.object(facts_service,
+                                                    '_format_response',
+                                                    return_value=('formated'
+                                                                  '-result'))
+        result = facts_service.get_point_classes(point_class, is_active,
+                                                 result_format,
+                                                 download_folder,
+                                                 file_name)
+        mock_get.assert_called_once_with(expected_url, data=params)
+        mock__get_parser.assert_called_once_with('pandas', data_key='data',
+                                                 download_folder=(
+                                                     download_folder),
+                                                 file_name=file_name)
+        mock__format_response.assert_called_once_with('mock-response',
+                                                      parser='mock-parser',
+                                                      parser_args={'arg': 1})
+        assert result == 'formated-result'
 
     def test_put_point_class(cls, facts_service):
         with pytest.raises(NotImplementedError):
@@ -604,9 +683,69 @@ class TestFactsService:
         with pytest.raises(NotImplementedError):
             facts_service.delete_point_class()
 
-    def test_get_point_mapping(cls, facts_service):
-        with pytest.raises(NotImplementedError):
-            facts_service.get_point_mapping()
+    def test_get_point_mapping(self, mocker, facts_service):
+        building_id = 1
+        equipment_names = ['VAV_01']
+        equipment_types = ['VAV']
+        point_classes = ['SpaceAirTemperature']
+        eco_point_ids = [1, 2, 3]
+        display_names = ['SpaceTemp']
+        native_names = ['native-name-1']
+        point_class_expression = ['VAV.* .*']
+        native_name_expression = ['VAV.*']
+        display_name_expression = ['AHU.* .*']
+        is_active = True
+        result_format = 'pandas'
+        download_folder = '/downloads/'
+        file_name = 'point-mapping.csv'
+        expected_url = ('https://facts.prod.ecorithm.com/api/'
+                        'v1/building/1/point-mapping')
+        mock_get = mocker.patch.object(facts_service, 'get',
+                                       return_value='mock-response')
+        data = {
+            'is_active': is_active,
+            'eco_point_ids': eco_point_ids,
+            'equipment_names': equipment_names,
+            'equipment_types': equipment_types,
+            'point_classes': point_classes,
+            'display_names': display_names,
+            'native_names': native_names,
+            'point_class_expression': point_class_expression,
+            'display_name_expression': display_name_expression,
+            'native_name_expression': native_name_expression}
+        mock__get_parser = mocker.patch.object(facts_service, '_get_parser',
+                                               return_value={'parser':
+                                                             'mock-parser',
+                                                             'parser_args':
+                                                             {'arg': 1}})
+        mock__format_response = mocker.patch.object(facts_service,
+                                                    '_format_response',
+                                                    return_value=('formated'
+                                                                  '-result'))
+        result = facts_service.get_point_mapping(
+            building_id=building_id,
+            equipment_names=equipment_names,
+            equipment_types=equipment_types,
+            point_classes=point_classes,
+            eco_point_ids=eco_point_ids,
+            display_names=display_names,
+            native_names=native_names,
+            point_class_expression=point_class_expression,
+            native_name_expression=native_name_expression,
+            display_name_expression=display_name_expression,
+            is_active=is_active,
+            result_format=result_format,
+            download_folder=download_folder,
+            file_name=file_name)
+        mock_get.assert_called_once_with(expected_url, data=data)
+        mock__get_parser.assert_called_once_with('pandas', data_key='data',
+                                                 download_folder=(
+                                                     download_folder),
+                                                 file_name=file_name)
+        mock__format_response.assert_called_once_with('mock-response',
+                                                      parser='mock-parser',
+                                                      parser_args={'arg': 1})
+        assert result == 'formated-result'
 
     def test_delete_point_mapping(cls, facts_service):
         with pytest.raises(NotImplementedError):
@@ -616,9 +755,39 @@ class TestFactsService:
         with pytest.raises(NotImplementedError):
             facts_service.put_point_mapping()
 
-    def test_get_equipment_types(cls, facts_service):
-        with pytest.raises(NotImplementedError):
-            facts_service.get_equipment_types()
+    def test_get_equipment_types(self, mocker, facts_service):
+        equipment_type = 'VAV'
+        is_active = True
+        result_format = 'pandas'
+        download_folder = '/downloads/'
+        file_name = 'building.csv'
+        expected_url = ('https://facts.prod.ecorithm.com/api/'
+                        'v1/equipment-types')
+        mock_get = mocker.patch.object(facts_service, 'get',
+                                       return_value='mock-response')
+        params = {'equipment_type': equipment_type, 'is_active': is_active}
+        mock__get_parser = mocker.patch.object(facts_service, '_get_parser',
+                                               return_value={'parser':
+                                                             'mock-parser',
+                                                             'parser_args':
+                                                             {'arg': 1}})
+        mock__format_response = mocker.patch.object(facts_service,
+                                                    '_format_response',
+                                                    return_value=('formated'
+                                                                  '-result'))
+        result = facts_service.get_equipment_types(equipment_type, is_active,
+                                                   result_format,
+                                                   download_folder,
+                                                   file_name)
+        mock_get.assert_called_once_with(expected_url, data=params)
+        mock__get_parser.assert_called_once_with('pandas', data_key='data',
+                                                 download_folder=(
+                                                     download_folder),
+                                                 file_name=file_name)
+        mock__format_response.assert_called_once_with('mock-response',
+                                                      parser='mock-parser',
+                                                      parser_args={'arg': 1})
+        assert result == 'formated-result'
 
     def test_delete_equipment_type(cls, facts_service):
         with pytest.raises(NotImplementedError):
@@ -628,9 +797,46 @@ class TestFactsService:
         with pytest.raises(NotImplementedError):
             facts_service.put_equipment_type()
 
-    def test_get_equipment(cls, facts_service):
-        with pytest.raises(NotImplementedError):
-            facts_service.get_equipment()
+    def test_get_equipment(self, mocker, facts_service):
+        building_id = 1
+        equipment_name = ['VAV_01']
+        equipment_type = ['VAV']
+        is_active = True
+        result_format = 'pandas'
+        download_folder = '/downloads/',
+        file_name = 'equipment.csv'
+        expected_url = ('https://facts.prod.ecorithm.com/api/'
+                        'v1/building/1/equipment')
+        mock_get = mocker.patch.object(facts_service, 'get',
+                                       return_value='mock-response')
+        params = {'equipment_name': equipment_name,
+                  'equipment_type': equipment_type,
+                  'is_active': is_active}
+        mock__get_parser = mocker.patch.object(facts_service, '_get_parser',
+                                               return_value={'parser':
+                                                             'mock-parser',
+                                                             'parser_args':
+                                                             {'arg': 1}})
+        mock__format_response = mocker.patch.object(facts_service,
+                                                    '_format_response',
+                                                    return_value=('formated'
+                                                                  '-result'))
+        result = facts_service.get_equipment(building_id=building_id,
+                                             equipment_name=equipment_name,
+                                             equipment_type=equipment_type,
+                                             is_active=is_active,
+                                             result_format=result_format,
+                                             download_folder=download_folder,
+                                             file_name=file_name)
+        mock_get.assert_called_once_with(expected_url, data=params)
+        mock__get_parser.assert_called_once_with('pandas', data_key='data',
+                                                 download_folder=(
+                                                     download_folder),
+                                                 file_name=file_name)
+        mock__format_response.assert_called_once_with('mock-response',
+                                                      parser='mock-parser',
+                                                      parser_args={'arg': 1})
+        assert result == 'formated-result'
 
     def test_delete_equipment(cls, facts_service):
         with pytest.raises(NotImplementedError):
@@ -664,9 +870,9 @@ class TestFactsService:
         with pytest.raises(NotImplementedError):
             facts_service.get_etl_process_history()
 
-    def test_get_unstored_antive_names(cls, facts_service):
+    def test_get_unstored_native_names(cls, facts_service):
         with pytest.raises(NotImplementedError):
-            facts_service.get_unstored_antive_names()
+            facts_service.get_unstored_native_names()
 
     def test_get_building_dqi(cls, facts_service):
         with pytest.raises(NotImplementedError):
