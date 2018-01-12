@@ -54,6 +54,14 @@ class BaseRequest:
                          parser_args={}):
         if response.status_code == 200 or response.status_code == 201:
             return result_parser(response, **parser_args)
+
+        elif response.status_code == 401:
+            print('Invalid credentials. Did you remeber to set you '
+                  'environment variables?. '
+                  'See `https://github.com/ecorithm/eco-connect/README.md` '
+                  ' for more information.')
+            raise InvalidRequest()
+
         else:
             try:
                 raise InvalidRequest(response.json(), response.status_code)

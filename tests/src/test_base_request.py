@@ -179,3 +179,19 @@ class TestBaseRequest:
                 result_parser=mock_result_parser,
                 parser_args=parser_args)
             mock_response.text.asset_called_once()
+
+    def test__format_response_401_text(self, mocker):
+        mock_response = mocker.Mock()
+        mock_result_parser = mocker.Mock()
+        mock_response.json.side_effect = ValueError
+        mock_response.text.return_value = 'error'
+        mock_result_parser.return_value = 'parsed_result'
+        parser_args = {'arg1': 1, 'arg2': 2}
+        mock_response.status_code = 401
+
+        with pytest.raises(InvalidRequest):
+            BaseRequest._format_response(
+                mock_response,
+                result_parser=mock_result_parser,
+                parser_args=parser_args)
+            mock_response.text.asset_called_once()
