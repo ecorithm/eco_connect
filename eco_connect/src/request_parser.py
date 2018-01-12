@@ -9,7 +9,7 @@ from eco_connect.src.errors import RequestParserError
 class RequestParser:
 
     @classmethod
-    def raw_parser(cls, response):
+    def json_parser(cls, response):
         try:
             return response.json()
         except ValueError:

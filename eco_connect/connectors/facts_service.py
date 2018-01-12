@@ -6,8 +6,8 @@ import pandas as pd
 
 from eco_connect.src.credentials_factory import CredentialsFactory
 from eco_connect.src.base_request import BaseRequest
-from eco_connect.src.result_parser import RequestParser
-from eco_connect.src.errors import ResultParserError
+from eco_connect.src.request_parser import RequestParser
+from eco_connect.src.errors import RequestParserError
 
 
 class FactsService(BaseRequest):
@@ -15,18 +15,19 @@ class FactsService(BaseRequest):
     def __init__(self, environment_name='prod', version='v1'):
         self.env = self._validate_env(environment_name=environment_name)
         self.hostname = f'https://facts.{self.env}.ecorithm.com/api/{version}/'
-        self._get_credentials()
+        self._set_credentials()
 
     def _validate_env(self, environment_name):
         environment_name = environment_name.lower()
-        if environment_name in ['prod', 'qa']:
+        valid_envs = ['prod', 'qa']
+        if environment_name in valid_envs:
             return environment_name
         else:
-            raise ValueError(f'`{environment_name}` is invalid!')
+            raise ValueError(f'`{environment_name}` is invalid! Chose from '
+                             f'{valid_envs}')
 
-    def _get_credentials(self):
-        if not hasattr(self, 'credentials'):
-            self.credentials = CredentialsFactory().get_eco_credentials()
+    def _set_credentials(self):
+        self.credentials = CredentialsFactory.get_eco_credentials()
 
     def get_facts(self,
                   building_id,
@@ -68,7 +69,7 @@ class FactsService(BaseRequest):
             parser_args = {}
             fact_parser = self._pandas_fact_parser
         elif result_format.lower() == 'json':
-            fact_parser = RequestParser.raw_parser
+            fact_parser = RequestParser.json_parser
             parser_args = {}
         elif result_format.lower() == 'tuple':
             fact_parser = self._tuple_fact_parser
@@ -78,25 +79,25 @@ class FactsService(BaseRequest):
             parser_args = {'download_folder': download_folder,
                            'file_name': file_name}
         else:
-            raise ValueError(f'{fact_parser} is not valid!')
+            raise ValueError(f'{result_format} is not valid!')
 
         response = self.post(url, data=data, auth=self.credentials)
 
-        return self._format_result(response, fact_parser, parser_args)
+        return self._format_response(response, fact_parser, parser_args)
 
-    def _tuples_fact_parser(self, response):
+    def _tuple_fact_parser(self, response):
         result = response.json()
         try:
             result = response.json()
         except (ValueError):
-            raise ResultParserError('Unable to parse the response.',
-                                    response.text)
+            raise RequestParserError('Unable to parse the response.',
+                                     response.text)
 
         try:
             result = result['data']
         except KeyError:
-            raise ResultParserError('Unable to parse the response.',
-                                    result)
+            raise RequestParserError('Unable to parse the response.',
+                                     result)
 
         tuple_names = list(result[0].values()['data'].keys()) +\
             list(result[0].values()['meta'].keys())

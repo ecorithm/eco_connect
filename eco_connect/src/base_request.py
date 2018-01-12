@@ -50,7 +50,7 @@ class BaseRequest:
 
     @classmethod
     def _format_response(self, response,
-                         result_parser=RequestParser.raw_parser,
+                         result_parser=RequestParser.json_parser,
                          parser_args={}):
         if response.status_code == 200 or response.status_code == 201:
             return result_parser(response, **parser_args)
