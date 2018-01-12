@@ -8,7 +8,7 @@ from eco_connect.src.errors import RequestParserError
 
 
 class TestFactsService:
-    MODULE_PATH = 'eco_connect'
+    MODULE_PATH = 'eco_connect.facts_service'
     CLASS_PATH = MODULE_PATH + '.FactsService'\
 
 

@@ -8,7 +8,7 @@ def get_requirements():
 
 setup(
     name='eco-connect',
-    version='0.11',
+    version='0.12',
     url='https://github.com/ecorithm/eco-connect',
     packages=find_packages(exclude=['tests*']),
     include_package_data=True,
