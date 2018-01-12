@@ -1,6 +1,5 @@
 from collections import namedtuple
 from operator import attrgetter
-
 import os
 
 import pandas as pd
