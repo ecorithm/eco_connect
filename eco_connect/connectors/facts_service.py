@@ -121,3 +121,78 @@ class FactsService(BaseRequest):
         os.makedirs(download_folder, exist_ok=True)
         result_df.to_csv(download_folder + file_name, index=None)
         return result_df.to_csv
+
+    def get_avg_facts(cls):
+        raise NotImplementedError()
+
+    def put_facts(cls):
+        raise NotImplementedError()
+
+    def get_buildings(cls):
+        raise NotImplementedError()
+
+    def put_buildings(cls):
+        raise NotImplementedError()
+
+    def delete_buildings(cls):
+        raise NotImplementedError()
+
+    def get_point_classes(cls):
+        raise NotImplementedError()
+
+    def put_point_class(cls):
+        raise NotImplementedError()
+
+    def delete_point_class(cls):
+        raise NotImplementedError()
+
+    def get_point_mapping(cls):
+        raise NotImplementedError()
+
+    def delete_point_mapping(cls):
+        raise NotImplementedError()
+
+    def put_point_mapping(cls):
+        raise NotImplementedError()
+
+    def get_equipment_types(cls):
+        raise NotImplementedError()
+
+    def delete_equipment_type(cls):
+        raise NotImplementedError()
+
+    def put_equipment_type(cls):
+        raise NotImplementedError()
+
+    def get_equipment(cls):
+        raise NotImplementedError()
+
+    def delete_equipment(cls):
+        raise NotImplementedError()
+
+    def put_equipment(cls):
+        raise NotImplementedError()
+
+    def get_native_names(cls):
+        raise NotImplementedError()
+
+    def put_native_names(cls):
+        raise NotImplementedError()
+
+    def delete_native_names(cls):
+        raise NotImplementedError()
+
+    def get_native_names_history(cls):
+        raise NotImplementedError()
+
+    def get_unamapped_native_names(cls):
+        raise NotImplementedError()
+
+    def get_etl_process_history(cls):
+        raise NotImplementedError()
+
+    def get_unstored_antive_names(cls):
+        raise NotImplementedError()
+
+    def get_building_dqi(cls):
+        raise NotImplementedError()

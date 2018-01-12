@@ -572,3 +572,102 @@ class TestFactsService:
                                        download_folder, file_name)
         make_dirs.assert_called_once_with('/', exist_ok=True)
 
+    def test_get_avg_facts(cls, facts_service):
+        with pytest.raises(NotImplementedError):
+            facts_service.get_avg_facts()
+
+    def test_put_facts(cls, facts_service):
+        with pytest.raises(NotImplementedError):
+            facts_service.put_facts()
+
+    def test_get_buildings(cls, facts_service):
+        with pytest.raises(NotImplementedError):
+            facts_service.get_buildings()
+
+    def test_put_buildings(cls, facts_service):
+        with pytest.raises(NotImplementedError):
+            facts_service.put_buildings()
+
+    def test_delete_buildings(cls, facts_service):
+        with pytest.raises(NotImplementedError):
+            facts_service.delete_buildings()
+
+    def test_get_point_classes(cls, facts_service):
+        with pytest.raises(NotImplementedError):
+            facts_service.get_point_classes()
+
+    def test_put_point_class(cls, facts_service):
+        with pytest.raises(NotImplementedError):
+            facts_service.put_point_class()
+
+    def test_delete_point_class(cls, facts_service):
+        with pytest.raises(NotImplementedError):
+            facts_service.delete_point_class()
+
+    def test_get_point_mapping(cls, facts_service):
+        with pytest.raises(NotImplementedError):
+            facts_service.get_point_mapping()
+
+    def test_delete_point_mapping(cls, facts_service):
+        with pytest.raises(NotImplementedError):
+            facts_service.delete_point_mapping()
+
+    def test_put_point_mapping(cls, facts_service):
+        with pytest.raises(NotImplementedError):
+            facts_service.put_point_mapping()
+
+    def test_get_equipment_types(cls, facts_service):
+        with pytest.raises(NotImplementedError):
+            facts_service.get_equipment_types()
+
+    def test_delete_equipment_type(cls, facts_service):
+        with pytest.raises(NotImplementedError):
+            facts_service.delete_equipment_type()
+
+    def test_put_equipment_type(cls, facts_service):
+        with pytest.raises(NotImplementedError):
+            facts_service.put_equipment_type()
+
+    def test_get_equipment(cls, facts_service):
+        with pytest.raises(NotImplementedError):
+            facts_service.get_equipment()
+
+    def test_delete_equipment(cls, facts_service):
+        with pytest.raises(NotImplementedError):
+            facts_service.delete_equipment()
+
+    def test_put_equipment(cls, facts_service):
+        with pytest.raises(NotImplementedError):
+            facts_service.put_equipment()
+
+    def test_get_native_names(cls, facts_service):
+        with pytest.raises(NotImplementedError):
+            facts_service.get_native_names()
+
+    def test_put_native_names(cls, facts_service):
+        with pytest.raises(NotImplementedError):
+            facts_service.put_native_names()
+
+    def test_delete_native_names(cls, facts_service):
+        with pytest.raises(NotImplementedError):
+            facts_service.delete_native_names()
+
+    def test_get_native_names_history(cls, facts_service):
+        with pytest.raises(NotImplementedError):
+            facts_service.get_native_names_history()
+
+    def test_get_unamapped_native_names(cls, facts_service):
+        with pytest.raises(NotImplementedError):
+            facts_service.get_unamapped_native_names()
+
+    def test_get_etl_process_history(cls, facts_service):
+        with pytest.raises(NotImplementedError):
+            facts_service.get_etl_process_history()
+
+    def test_get_unstored_antive_names(cls, facts_service):
+        with pytest.raises(NotImplementedError):
+            facts_service.get_unstored_antive_names()
+
+    def test_get_building_dqi(cls, facts_service):
+        with pytest.raises(NotImplementedError):
+            facts_service.get_building_dqi()
