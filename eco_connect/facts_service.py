@@ -252,8 +252,23 @@ class FactsService(BaseRequest):
     def put_equipment(cls):
         raise NotImplementedError()
 
-    def get_native_names(cls):
-        raise NotImplementedError()
+    def get_native_names(self, building_id,
+                         native_name=None,
+                         is_active=True, result_format='pandas',
+                         download_folder=(os.path.expanduser('~') +
+                                          '/downloads/'),
+                         file_name='native_names.csv'):
+        url = self.hostname + f'building/{building_id}/native-names'
+        params = {'native_name': native_name,
+                  'is_active': is_active}
+        reponse = self.get(url, data=params)
+        parser = self._get_parser(result_format, data_key='data',
+                                  download_folder=download_folder,
+                                  file_name=file_name)
+
+        parsed_result = self._format_response(reponse,
+                                              **parser)
+        return parsed_result
 
     def put_native_names(cls):
         raise NotImplementedError()

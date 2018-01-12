@@ -846,9 +846,41 @@ class TestFactsService:
         with pytest.raises(NotImplementedError):
             facts_service.put_equipment()
 
-    def test_get_native_names(cls, facts_service):
-        with pytest.raises(NotImplementedError):
-            facts_service.get_native_names()
+    def test_get_native_names(self, mocker, facts_service):
+        building_id = 1
+        native_name = 'VAV'
+        is_active = True
+        result_format = 'pandas'
+        download_folder = '/downloads/'
+        file_name = 'building.csv'
+        expected_url = ('https://facts.prod.ecorithm.com/api/'
+                        'v1/building/1/native-names')
+        mock_get = mocker.patch.object(facts_service, 'get',
+                                       return_value='mock-response')
+        params = {'native_name': native_name, 'is_active': is_active}
+        mock__get_parser = mocker.patch.object(facts_service, '_get_parser',
+                                               return_value={'parser':
+                                                             'mock-parser',
+                                                             'parser_args':
+                                                             {'arg': 1}})
+        mock__format_response = mocker.patch.object(facts_service,
+                                                    '_format_response',
+                                                    return_value=('formated'
+                                                                  '-result'))
+        result = facts_service.get_native_names(building_id, native_name,
+                                                is_active,
+                                                result_format,
+                                                download_folder,
+                                                file_name)
+        mock_get.assert_called_once_with(expected_url, data=params)
+        mock__get_parser.assert_called_once_with('pandas', data_key='data',
+                                                 download_folder=(
+                                                     download_folder),
+                                                 file_name=file_name)
+        mock__format_response.assert_called_once_with('mock-response',
+                                                      parser='mock-parser',
+                                                      parser_args={'arg': 1})
+        assert result == 'formated-result'
 
     def test_put_native_names(cls, facts_service):
         with pytest.raises(NotImplementedError):
