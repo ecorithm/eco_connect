@@ -7,8 +7,8 @@ def get_requirements():
 
 
 setup(
-    name='eco_connect',
-    version='0.0',
+    name='eco-connect',
+    version='0.1',
     packages=['eco_connect'],
     include_package_data=True,
     install_requires=get_requirements()

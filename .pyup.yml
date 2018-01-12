@@ -1,0 +1,17 @@
+
+update: all
+
+pin: True
+
+
+schedule: "every day"
+
+
+search: True
+
+
+requirements:
+  - requirements.txt:
+      # update all dependencies and pin them
+      update: all
+      pin: True
