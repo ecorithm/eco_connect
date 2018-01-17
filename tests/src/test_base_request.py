@@ -214,15 +214,10 @@ class TestBaseRequest():
     def test_get_parser_csv(self, base_request):
         result_format = 'csv'
         data_key = 'data-key'
-        download_folder = 'downloads'
-        file_name = 'data.csv'
         parser = base_request._get_parser(
-            result_format, data_key=data_key, download_folder=download_folder,
-            file_name=file_name)
+            result_format, data_key=data_key)
         assert parser['parser'] == RequestParser.csv_parser
-        assert parser['parser_args'] == {'data_key': data_key,
-                                         'download_folder': download_folder,
-                                         'file_name': file_name}
+        assert parser['parser_args'] == {'data_key': data_key}
 
     def test_get_parser_tuple(self, base_request):
         result_format = 'tuple'

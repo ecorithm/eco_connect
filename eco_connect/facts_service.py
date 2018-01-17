@@ -1,6 +1,5 @@
 from collections import namedtuple
 from operator import attrgetter
-import os
 
 import pandas as pd
 
@@ -32,9 +31,7 @@ class FactsService(BaseRequest):
                   point_class_expression=[],
                   native_name_expression=[],
                   display_name_expression=[],
-                  result_format='pandas',
-                  download_folder=os.path.expanduser('~') + '/downloads/',
-                  file_name='facts.csv'):
+                  result_format='pandas'):
 
         url = self.hostname + f'building/{building_id}/facts'
 
@@ -54,18 +51,17 @@ class FactsService(BaseRequest):
             'native_name_expression': native_name_expression}
 
         if result_format.lower() == 'pandas':
-            parser_args = {}
+            parser_args = {'data_key': 'data'}
             fact_parser = self._pandas_fact_parser
         elif result_format.lower() == 'json':
             fact_parser = RequestParser.json_parser
             parser_args = {}
         elif result_format.lower() == 'tuple':
             fact_parser = self._tuple_fact_parser
-            parser_args = {}
+            parser_args = {'data_key': 'data'}
         elif result_format.lower() == 'csv':
             fact_parser = self._csv_fact_parser
-            parser_args = {'download_folder': download_folder,
-                           'file_name': file_name}
+            parser_args = {'data_key': 'data'}
         else:
             raise ValueError(f'{result_format} is not valid!')
 
@@ -100,15 +96,8 @@ class FactsService(BaseRequest):
         tuple_response = self._tuple_fact_parser(response)
         return pd.DataFrame(tuple_response)
 
-    def _csv_fact_parser(self, response,
-                         download_folder,
-                         file_name):
+    def _csv_fact_parser(self, response):
         result_df = self._pandas_fact_parser(response)
-        try:
-            os.makedirs(download_folder, exist_ok=True)
-        except OSError:
-            raise ValueError(f'{download_folder} is not a valid folder path!')
-        result_df.to_csv(download_folder + file_name, index=None)
         return result_df.to_csv
 
     def put_facts(self, building_id, data):
@@ -121,47 +110,68 @@ class FactsService(BaseRequest):
         raise NotImplementedError()
 
     def get_buildings(self, building_id=None,
-                      is_active=True, result_format='pandas',
-                      download_folder=os.path.expanduser('~') + '/downloads/',
-                      file_name='building.csv'):
+                      is_active=True, result_format='pandas'):
         url = self.hostname + f'buildings'
         params = {'building_id': building_id, 'is_active': is_active}
-        reponse = self.get(url, data=params)
-        parser = self._get_parser(result_format, data_key='data',
-                                  download_folder=download_folder,
-                                  file_name=file_name)
+        response = self.get(url, data=params)
+        parser = self._get_parser(result_format, data_key='data')
 
-        parsed_result = self._format_response(reponse,
+        parsed_result = self._format_response(response,
                                               **parser)
         return parsed_result
 
-    def put_building(cls):
-        raise NotImplementedError()
+    def put_building(self, building, building_id=None,
+                     result_format='pandas'):
+        url = self.hostname + f'buildings'
+        payload = {'building': building,
+                   'building_id': building_id}
+        response = self.put(url, data=payload)
+        parser = self._get_parser(result_format)
+        parsed_result = self._format_response(response,
+                                              **parser)
+        return parsed_result
 
-    def delete_building(cls):
-        raise NotImplementedError()
+    def delete_building(self, building_id,
+                        result_format='pandas'):
+        url = self.hostname + f'buildings'
+        payload = {'building_id': building_id}
+        response = self.delete(url, data=payload)
+        parser = self._get_parser(result_format)
+        parsed_result = self._format_response(response,
+                                              **parser)
+        return parsed_result
 
     def get_point_classes(self, point_class=None,
-                          is_active=True, result_format='pandas',
-                          download_folder=(os.path.expanduser('~') +
-                                           '/downloads/'),
-                          file_name='point-classes.csv'):
+                          is_active=True, result_format='pandas'):
         url = self.hostname + f'point-classes'
         params = {'point_class': point_class, 'is_active': is_active}
-        reponse = self.get(url, data=params)
-        parser = self._get_parser(result_format, data_key='data',
-                                  download_folder=download_folder,
-                                  file_name=file_name)
+        response = self.get(url, data=params)
+        parser = self._get_parser(result_format, data_key='data')
 
-        parsed_result = self._format_response(reponse,
+        parsed_result = self._format_response(response,
                                               **parser)
         return parsed_result
 
-    def put_point_class(cls):
-        raise NotImplementedError()
+    def put_point_class(self, point_class, point_class_id=None,
+                        result_format='pandas'):
+        url = self.hostname + f'point-classes'
+        payload = {'point_class_id': point_class_id,
+                   'point_class': point_class}
+        response = self.put(url, data=payload)
+        parser = self._get_parser(result_format)
+        parsed_result = self._format_response(response,
+                                              **parser)
+        return parsed_result
 
-    def delete_point_class(cls):
-        raise NotImplementedError()
+    def delete_point_class(self, point_class,
+                           result_format='pandas'):
+        url = self.hostname + f'point-classes'
+        payload = {'point_class': point_class}
+        response = self.delete(url, data=payload)
+        parser = self._get_parser(result_format)
+        parsed_result = self._format_response(response,
+                                              **parser)
+        return parsed_result
 
     def get_point_mapping(self,
                           building_id,
@@ -175,10 +185,7 @@ class FactsService(BaseRequest):
                           native_name_expression=[],
                           display_name_expression=[],
                           is_active=True,
-                          result_format='pandas',
-                          download_folder=(os.path.expanduser('~') +
-                                           '/downloads/'),
-                          file_name='point-mapping.csv'):
+                          result_format='pandas'):
         url = self.hostname + f'building/{building_id}/point-mapping'
         data = {
             'is_active': is_active,
@@ -191,12 +198,10 @@ class FactsService(BaseRequest):
             'point_class_expression': point_class_expression,
             'display_name_expression': display_name_expression,
             'native_name_expression': native_name_expression}
-        reponse = self.get(url, data=data)
-        parser = self._get_parser(result_format, data_key='data',
-                                  download_folder=download_folder,
-                                  file_name=file_name)
+        response = self.get(url, data=data)
+        parser = self._get_parser(result_format, data_key='data')
 
-        parsed_result = self._format_response(reponse,
+        parsed_result = self._format_response(response,
                                               **parser)
         return parsed_result
 
@@ -207,18 +212,13 @@ class FactsService(BaseRequest):
         raise NotImplementedError()
 
     def get_equipment_types(self, equipment_type=None,
-                            is_active=True, result_format='pandas',
-                            download_folder=(os.path.expanduser('~') +
-                                             '/downloads/'),
-                            file_name='equipment_types.csv'):
+                            is_active=True, result_format='pandas'):
         url = self.hostname + f'equipment-types'
         params = {'equipment_type': equipment_type, 'is_active': is_active}
-        reponse = self.get(url, data=params)
-        parser = self._get_parser(result_format, data_key='data',
-                                  download_folder=download_folder,
-                                  file_name=file_name)
+        response = self.get(url, data=params)
+        parser = self._get_parser(result_format, data_key='data')
 
-        parsed_result = self._format_response(reponse,
+        parsed_result = self._format_response(response,
                                               **parser)
         return parsed_result
 
@@ -230,19 +230,15 @@ class FactsService(BaseRequest):
 
     def get_equipment(self, building_id, equipment_name=None,
                       equipment_type=None,
-                      is_active=True, result_format='pandas',
-                      download_folder=os.path.expanduser('~') + '/downloads/',
-                      file_name='equipment.csv'):
+                      is_active=True, result_format='pandas'):
         url = self.hostname + f'building/{building_id}/equipment'
         params = {'equipment_type': equipment_type,
                   'is_active': is_active,
                   'equipment_name': equipment_name}
-        reponse = self.get(url, data=params)
-        parser = self._get_parser(result_format, data_key='data',
-                                  download_folder=download_folder,
-                                  file_name=file_name)
+        response = self.get(url, data=params)
+        parser = self._get_parser(result_format, data_key='data')
 
-        parsed_result = self._format_response(reponse,
+        parsed_result = self._format_response(response,
                                               **parser)
         return parsed_result
 
@@ -254,19 +250,14 @@ class FactsService(BaseRequest):
 
     def get_native_names(self, building_id,
                          native_name=None,
-                         is_active=True, result_format='pandas',
-                         download_folder=(os.path.expanduser('~') +
-                                          '/downloads/'),
-                         file_name='native_names.csv'):
+                         is_active=True, result_format='pandas'):
         url = self.hostname + f'building/{building_id}/native-names'
         params = {'native_name': native_name,
                   'is_active': is_active}
-        reponse = self.get(url, data=params)
-        parser = self._get_parser(result_format, data_key='data',
-                                  download_folder=download_folder,
-                                  file_name=file_name)
+        response = self.get(url, data=params)
+        parser = self._get_parser(result_format, data_key='data')
 
-        parsed_result = self._format_response(reponse,
+        parsed_result = self._format_response(response,
                                               **parser)
         return parsed_result
 

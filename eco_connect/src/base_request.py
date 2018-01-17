@@ -75,9 +75,7 @@ class BaseRequest:
             except ValueError:
                 raise InvalidRequest(response.text, response.status_code)
 
-    def _get_parser(self, result_format, data_key='data',
-                    download_folder=os.path.expanduser('~') + '/downloads',
-                    file_name='data.csv'):
+    def _get_parser(self, result_format, data_key='data'):
         parser = {'parser': None, 'parser_args': {}}
         if result_format.lower() == 'pandas':
             parser['parser_args'] = {'data_key': data_key}
@@ -90,9 +88,7 @@ class BaseRequest:
             parser['parser_args'] = {'data_key': data_key}
         elif result_format.lower() == 'csv':
             parser['parser'] = RequestParser.csv_parser
-            parser['parser_args'] = {'data_key': data_key,
-                                     'download_folder': download_folder,
-                                     'file_name': file_name}
+            parser['parser_args'] = {'data_key': data_key}
         else:
             raise ValueError(f'{result_format} is not valid!.'
                              ' Valid formats are (pandas, json, tuple, csv)')
