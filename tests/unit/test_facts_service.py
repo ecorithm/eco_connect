@@ -552,9 +552,246 @@ class TestFactsService:
                             return_value=mock_df)
         facts_service._csv_fact_parser(mock_response)
 
-    def test_get_avg_facts(cls, facts_service):
-        with pytest.raises(NotImplementedError):
-            facts_service.get_avg_facts()
+    def test_get_avg_facts_json(self, mocker, facts_service):
+        mock_response = mocker.Mock()
+        mock_json_parser = mocker.patch(self.MODULE_PATH +
+                                        '.RequestParser.json_parser')
+        mock_get = mocker.patch.object(facts_service, 'get')
+        mock_get.return_value = mock_response
+        mock_format_response = mocker.patch.object(facts_service,
+                                                   '_format_response')
+        mock_format_response.return_value = 'parsed_result'
+        building_id = 26
+        result_format = 'json'
+        mock_params = {
+            'start_date': '2017-12-20 00:00',
+            'end_date': '2017-12-21 00:00',
+            'start_hour': '00:00',
+            'end_hour': '23:55',
+            'period': 'day',
+            'aggregate': 'native_names',
+            'eco_point_ids': [1, 2, 3],
+            'equipment_names': ['VAV-01'],
+            'equipment_types': ['VAV'],
+            'point_classes': ['SpaceAirTemperature'],
+            'display_names': ['SpaceTemp'],
+            'native_names': ['native-name-1'],
+            'point_class_expression': ['.* .*'],
+            'display_name_expression': ['VAV.* .*'],
+            'native_name_expression': ['AHU.* .*']}
+        result = facts_service.get_avg_facts(building_id, **mock_params,
+                                             result_format=result_format)
+        assert result == 'parsed_result'
+        mock_get.assert_called_once_with(
+            ('https://facts.prod.ecorithm.com/api/v1/building/26/avg-facts'),
+            data=mock_params
+            )
+        mock_format_response.assert_called_once_with(
+            mock_response, parser=mock_json_parser,
+            parser_args={})
+
+    def test_get_avg_facts_pandas(self, mocker, facts_service):
+        mock_response = mocker.Mock()
+        mock_pandas_parser = mocker.patch.object(facts_service,
+                                                 '_pandas_fact_avg_parser')
+        mock_get = mocker.patch.object(facts_service, 'get')
+        mock_get.return_value = mock_response
+        mock_format_response = mocker.patch.object(facts_service,
+                                                   '_format_response')
+        mock_format_response.return_value = 'parsed_result'
+        building_id = 26
+        result_format = 'pandas'
+        mock_params = {
+            'start_date': '2017-12-20 00:00',
+            'end_date': '2017-12-21 00:00',
+            'start_hour': '00:00',
+            'end_hour': '23:55',
+            'period': 'day',
+            'aggregate': 'native_names',
+            'eco_point_ids': [1, 2, 3],
+            'equipment_names': ['VAV-01'],
+            'equipment_types': ['VAV'],
+            'point_classes': ['SpaceAirTemperature'],
+            'display_names': ['SpaceTemp'],
+            'native_names': ['native-name-1'],
+            'point_class_expression': ['.* .*'],
+            'display_name_expression': ['VAV.* .*'],
+            'native_name_expression': ['AHU.* .*']}
+        result = facts_service.get_avg_facts(building_id, **mock_params,
+                                             result_format=result_format)
+        assert result == 'parsed_result'
+        mock_get.assert_called_once_with(
+            ('https://facts.prod.ecorithm.com/api/v1/building/26/avg-facts'),
+            data=mock_params
+            )
+        mock_format_response.assert_called_once_with(
+            mock_response, parser=mock_pandas_parser,
+            parser_args={'data_key': 'data'})
+
+    def test_get_avg_facts_dqi_tuple(self, mocker, facts_service):
+        mock_response = mocker.Mock()
+        mock_pandas_parser = mocker.patch.object(facts_service,
+                                                 '_tuple_fact_avg_parser')
+        mock_get = mocker.patch.object(facts_service, 'get')
+        mock_get.return_value = mock_response
+        mock_format_response = mocker.patch.object(facts_service,
+                                                   '_format_response')
+        mock_format_response.return_value = 'parsed_result'
+        building_id = 26
+        result_format = 'tuple'
+        mock_params = {
+            'start_date': '2017-12-20 00:00',
+            'end_date': '2017-12-21 00:00',
+            'start_hour': '00:00',
+            'end_hour': '23:55',
+            'period': 'day',
+            'aggregate': 'native_names',
+            'eco_point_ids': [1, 2, 3],
+            'equipment_names': ['VAV-01'],
+            'equipment_types': ['VAV'],
+            'point_classes': ['SpaceAirTemperature'],
+            'display_names': ['SpaceTemp'],
+            'native_names': ['native-name-1'],
+            'point_class_expression': ['.* .*'],
+            'display_name_expression': ['VAV.* .*'],
+            'native_name_expression': ['AHU.* .*']}
+        result = facts_service.get_avg_facts(building_id, **mock_params,
+                                             result_format=result_format)
+        assert result == 'parsed_result'
+        mock_get.assert_called_once_with(
+            ('https://facts.prod.ecorithm.com/api/v1/building/26/avg-facts'),
+            data=mock_params
+            )
+        mock_format_response.assert_called_once_with(
+            mock_response, parser=mock_pandas_parser,
+            parser_args={'data_key': 'data'})
+
+    def test_get_avg_facts_csv(self, mocker, facts_service):
+        mock_response = mocker.Mock()
+        mock_pandas_parser = mocker.patch.object(facts_service,
+                                                 '_csv_fact_avg_parser')
+        mock_get = mocker.patch.object(facts_service, 'get')
+        mock_get.return_value = mock_response
+        mock_format_response = mocker.patch.object(facts_service,
+                                                   '_format_response')
+        mock_format_response.return_value = 'parsed_result'
+        building_id = 26
+        result_format = 'csv'
+        mock_params = {
+            'start_date': '2017-12-20 00:00',
+            'end_date': '2017-12-21 00:00',
+            'start_hour': '00:00',
+            'end_hour': '23:55',
+            'period': 'day',
+            'aggregate': 'native_names',
+            'eco_point_ids': [1, 2, 3],
+            'equipment_names': ['VAV-01'],
+            'equipment_types': ['VAV'],
+            'point_classes': ['SpaceAirTemperature'],
+            'display_names': ['SpaceTemp'],
+            'native_names': ['native-name-1'],
+            'point_class_expression': ['.* .*'],
+            'display_name_expression': ['VAV.* .*'],
+            'native_name_expression': ['AHU.* .*']}
+        result = facts_service.get_avg_facts(building_id, **mock_params,
+                                             result_format=result_format)
+        assert result == 'parsed_result'
+        mock_get.assert_called_once_with(
+            ('https://facts.prod.ecorithm.com/api/v1/building/26/avg-facts'),
+            data=mock_params
+            )
+        mock_format_response.assert_called_once_with(
+            mock_response, parser=mock_pandas_parser,
+            parser_args={'data_key': 'data'})
+
+    def test_get_avg_facts_invalid(self, mocker, facts_service):
+        mocker.patch.object(facts_service, 'get')
+        mock_format_response = mocker.patch.object(facts_service,
+                                                   '_format_response')
+        mock_format_response.return_value = 'parsed_result'
+        building_id = 26
+        result_format = 'arrows'
+        mock_params = {
+            'start_date': '2017-12-20 00:00',
+            'end_date': '2017-12-21 00:00',
+            'start_hour': '00:00',
+            'end_hour': '23:55',
+            'period': 'day',
+            'aggregate': 'native_names',
+            'eco_point_ids': [1, 2, 3],
+            'equipment_names': ['VAV-01'],
+            'equipment_types': ['VAV'],
+            'point_classes': ['SpaceAirTemperature'],
+            'display_names': ['SpaceTemp'],
+            'native_names': ['native-name-1'],
+            'point_class_expression': ['.* .*'],
+            'display_name_expression': ['VAV.* .*'],
+            'native_name_expression': ['AHU.* .*']}
+        with pytest.raises(ValueError):
+            facts_service.get_avg_facts(building_id,
+                                        **mock_params,
+                                        result_format=result_format)
+
+    def test__tuple_fact_avg_parser(self, mocker, facts_service):
+        mock_response = mocker.Mock()
+        mock_response.json.return_value = {"data": {"26": {
+            "2017-12-20 00:00:00": 71.78,
+            "2017-12-21 00:00:00": 72.78}}}
+        tuple_names = ['aggregate', 'timestamp', 'fact_value']
+
+        response_tuple = namedtuple('response_tuple', tuple_names)
+        expected_result = [response_tuple(**{
+                           'aggregate': "26",
+                           'timestamp': "2017-12-20 00:00:00",
+                           'fact_value': 71.78}),
+                           response_tuple(**{'aggregate': "26",
+                                             'timestamp':
+                                             "2017-12-21 00:00:00",
+                                             'fact_value': 72.78})]
+
+        result = facts_service._tuple_fact_avg_parser(mock_response)
+        assert result == expected_result
+
+    def test__tuple_fact_avg_error(self, mocker, facts_service):
+        mock_response = mocker.Mock()
+        mock_response.json.side_effect = ValueError
+        mock_response.text = 'error'
+        with pytest.raises(RequestParserError):
+            facts_service._tuple_fact_avg_parser(mock_response)
+
+    def test__pandas_fact_avg_parser(self, mocker, facts_service):
+        tuple_names = ['aggregate', 'timestamp', 'fact_value']
+        response_tuple = namedtuple('response_tuple', tuple_names)
+        mock_tuples = [response_tuple(**{'aggregate': "26",
+                                         'timestamp': "2017-12-20 00:00:00",
+                                         'fact_value': 71.78}),
+                       response_tuple(**{'aggregate': "26",
+                                         'timestamp':
+                                         "2017-12-21 00:00:00",
+                                         'fact_value': 72.78})]
+        mocker.patch.object(facts_service, '_tuple_fact_avg_parser',
+                            return_value=mock_tuples)
+        expected_data = [['26', "2017-12-20 00:00:00", 71.78],
+                         ['26', "2017-12-21 00:00:00", 72.78]]
+        expected_df = pd.DataFrame(columns=tuple_names, data=expected_data)
+        mock_response = mocker.Mock()
+
+        result = facts_service._pandas_fact_avg_parser(mock_response)
+        pd.testing.assert_frame_equal(expected_df, result)
+
+    def test__csv_fact_avg_parser(self, mocker, facts_service):
+        tuple_names = ['aggregate', 'timestamp', 'fact_value']
+        expected_data = [['26', "2017-12-20 00:00:00", 71.78],
+                         ['26', "2017-12-21 00:00:00", 72.78]]
+        expected_df = pd.DataFrame(columns=tuple_names, data=expected_data)
+        mock_response = mocker.Mock()
+        mocker.patch.object(facts_service, '_pandas_fact_avg_parser',
+                            return_value=expected_df)
+
+        result = facts_service._csv_fact_avg_parser(mock_response)
+        assert result == ('aggregate,timestamp,fact_value\n'
+                          '26,2017-12-20 00:00:00,71.78\n'
+                          '26,2017-12-21 00:00:00,72.78\n')
 
     def test_put_facts(cls, mocker, facts_service):
         mock_put_facts = pd.DataFrame(columns=['native_name',
@@ -569,6 +806,15 @@ class TestFactsService:
         mock_response = mocker.Mock()
         mock_put = mocker.patch.object(facts_service, 'put',
                                        return_value=mock_response)
+        mock__get_parser = mocker.patch.object(facts_service,
+                                               '_get_parser',
+                                               return_value={'parser':
+                                                             'parser',
+                                                             'parser_args':
+                                                             'args'})
+        mock_parse_result = mocker.patch.object(facts_service,
+                                                '_format_response',
+                                                return_value=mock_response)
         result = facts_service.put_facts(26, mock_put_facts)
         mock_put.assert_called_once_with(
             'https://facts.prod.ecorithm.com/api/v1/building/26/facts',
@@ -580,6 +826,8 @@ class TestFactsService:
                    'fact_time': '2017-12-21 00:00'}],
             encode_type='json')
         assert result == mock_response
+        mock__get_parser.assert_called()
+        mock_parse_result.assert_called()
 
     def test_get_buildings(self, mocker, facts_service):
         building_id = 1
@@ -624,7 +872,7 @@ class TestFactsService:
         result = facts_service.put_building(building=mock_building_name,
                                             building_id=mock_building_id)
         assert result == 'parse_get_result'
-        mock__get_parser.assert_called_once_with('pandas')
+        mock__get_parser.assert_called_once_with('json')
         mock_put.assert_called_once_with('https://facts.prod.ecorithm.com/'
                                          'api/v1/buildings',
                                          data={
@@ -645,7 +893,7 @@ class TestFactsService:
         mock_format_response.return_value = 'parse_get_result'
         result = facts_service.delete_building(building_id=mock_building_id)
         assert result == 'parse_get_result'
-        mock__get_parser.assert_called_once_with('pandas')
+        mock__get_parser.assert_called_once_with('json')
         mock_delete.assert_called_once_with('https://facts.prod.ecorithm.com/'
                                             'api/v1/buildings',
                                             data={
@@ -696,7 +944,7 @@ class TestFactsService:
             point_class_id=mock_point_class_id,
             point_class=mock_point_class)
         assert result == 'parse_get_result'
-        mock__get_parser.assert_called_once_with('pandas')
+        mock__get_parser.assert_called_once_with('json')
         mock_put.assert_called_once_with(
             'https://facts.prod.ecorithm.com/api/v1/point-classes',
             data={'point_class': mock_point_class,
@@ -716,7 +964,7 @@ class TestFactsService:
         mock_format_response.return_value = 'parse_get_result'
         result = facts_service.delete_point_class(point_class=point_class)
         assert result == 'parse_get_result'
-        mock__get_parser.assert_called_once_with('pandas')
+        mock__get_parser.assert_called_once_with('json')
         mock_delete.assert_called_once_with('https://facts.prod.ecorithm.com/'
                                             'api/v1/point-classes',
                                             data={'point_class': point_class})
@@ -778,13 +1026,84 @@ class TestFactsService:
                                                       parser_args={'arg': 1})
         assert result == 'formated-result'
 
-    def test_delete_point_mapping(cls, facts_service):
-        with pytest.raises(NotImplementedError):
-            facts_service.delete_point_mapping()
+    def test_delete_point_mapping(self, mocker, facts_service):
+        expected_url = ('https://facts.prod.ecorithm.com/api/'
+                        'v1/building/26/point-mapping')
+        mock_get = mocker.patch.object(facts_service, 'delete',
+                                       return_value='mock-response')
+        mock__get_parser = mocker.patch.object(facts_service, '_get_parser',
+                                               return_value={'parser':
+                                                             'mock-parser',
+                                                             'parser_args':
+                                                             {'arg': 1}})
+        mock__format_response = mocker.patch.object(facts_service,
+                                                    '_format_response',
+                                                    return_value=('formated'
+                                                                  '-result'))
+        mock_payload = {'eco_point_id': [1, 2, 3]}
+        result = facts_service.delete_point_mapping(building_id=26,
+                                                    eco_point_ids=[1, 2, 3])
+        mock_get.assert_called_once_with(expected_url, data=mock_payload,
+                                         encode_type='form')
+        mock__get_parser.assert_called_once_with('json')
+        mock__format_response.assert_called_once_with('mock-response',
+                                                      parser='mock-parser',
+                                                      parser_args={'arg': 1})
+        assert result == 'formated-result'
 
-    def test_put_point_mapping(cls, facts_service):
-        with pytest.raises(NotImplementedError):
-            facts_service.put_point_mapping()
+    def test_put_point_mapping(self, mocker, facts_service):
+        mock_data = [['VAV_01', "VAV",
+                      "UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.ZN-T",
+                      3,
+                      "SpaceAirTemperature",
+                      "2017-11-17T17:44:04Z",
+                      "SpaceTemp"],
+                     ['VAV_02', "VAV",
+                      "UCSB/275/VAV_301/NAE11/N2-2.275-VAV-302.ZN-T",
+                      4,
+                      "SpaceAirTemperature",
+                      "2017-11-17T17:44:04Z",
+                      "SpaceTemp"]]
+        mock_columns = ['equipment_name', 'equipment_type', 'native_name',
+                        'eco_point_id', 'point_class', 'last_updated',
+                        'display_name']
+        mock_put = mocker.patch.object(facts_service, 'put',
+                                       return_value='mock-response')
+        mock__get_parser = mocker.patch.object(facts_service, '_get_parser',
+                                               return_value={'parser':
+                                                             'mock-parser',
+                                                             'parser_args':
+                                                             {'arg': 1}})
+        mock__format_response = mocker.patch.object(facts_service,
+                                                    '_format_response',
+                                                    return_value=('formated'
+                                                                  '-result'))
+        mock_df = pd.DataFrame(data=mock_data, columns=mock_columns)
+
+        result = facts_service.put_point_mapping(building_id=26,
+                                                 point_mapping=mock_df)
+        put_input = [{
+            'equipment_name': 'VAV_01',
+            'equipment_type': "VAV",
+            'native_name': "UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.ZN-T",
+            'eco_point_id': 3,
+            'point_class': "SpaceAirTemperature",
+            'last_updated': "2017-11-17T17:44:04Z",
+            'display_name': "SpaceTemp"},
+            {'equipment_name': 'VAV_02',
+             'equipment_type': "VAV",
+             'native_name': "UCSB/275/VAV_301/NAE11/N2-2.275-VAV-302.ZN-T",
+             'eco_point_id': 4,
+             'point_class': "SpaceAirTemperature",
+             'last_updated': "2017-11-17T17:44:04Z",
+             'display_name': "SpaceTemp"}]
+        expected_url = ('https://facts.prod.ecorithm.com/api/'
+                        'v1/building/26/point-mapping')
+        mock_put.assert_called_once_with(expected_url, data=put_input,
+                                         encode_type='json')
+        assert result == 'formated-result'
+        mock__format_response.assert_called()
+        mock__get_parser.assert_called()
 
     def test_get_equipment_types(self, mocker, facts_service):
         equipment_type = 'VAV'
@@ -813,13 +1132,55 @@ class TestFactsService:
                                                       parser_args={'arg': 1})
         assert result == 'formated-result'
 
-    def test_delete_equipment_type(cls, facts_service):
-        with pytest.raises(NotImplementedError):
-            facts_service.delete_equipment_type()
+    def test_delete_equipment_type(self, mocker, facts_service):
+        expected_url = ('https://facts.prod.ecorithm.com/api/'
+                        'v1/equipment-types')
+        mock_get = mocker.patch.object(facts_service, 'delete',
+                                       return_value='mock-response')
+        mock__get_parser = mocker.patch.object(facts_service, '_get_parser',
+                                               return_value={'parser':
+                                                             'mock-parser',
+                                                             'parser_args':
+                                                             {'arg': 1}})
+        mock__format_response = mocker.patch.object(facts_service,
+                                                    '_format_response',
+                                                    return_value=('formated'
+                                                                  '-result'))
+        mock_payload = {'equipment_type': 'name-1'}
+        result = facts_service.delete_equipment_type(equipment_type='name-1')
+        mock_get.assert_called_once_with(expected_url, data=mock_payload,
+                                         encode_type='form')
+        mock__get_parser.assert_called_once_with('json')
+        mock__format_response.assert_called_once_with('mock-response',
+                                                      parser='mock-parser',
+                                                      parser_args={'arg': 1})
+        assert result == 'formated-result'
 
-    def test_put_equipment_type(cls, facts_service):
-        with pytest.raises(NotImplementedError):
-            facts_service.put_equipment_type()
+    def test_put_equipment_type(self, mocker, facts_service):
+        expected_url = ('https://facts.prod.ecorithm.com/api/'
+                        'v1/equipment-types')
+        mock_get = mocker.patch.object(facts_service, 'put',
+                                       return_value='mock-response')
+        mock__get_parser = mocker.patch.object(facts_service, '_get_parser',
+                                               return_value={'parser':
+                                                             'mock-parser',
+                                                             'parser_args':
+                                                             {'arg': 1}})
+        mock__format_response = mocker.patch.object(facts_service,
+                                                    '_format_response',
+                                                    return_value=('formated'
+                                                                  '-result'))
+        mock_payload = {'equipment_type': 'name-1',
+                        'equipment_type_id': 123}
+        result = facts_service.put_equipment_type(equipment_type='name-1',
+                                                  equipment_type_id=123)
+        mock_get.assert_called_once_with(expected_url, data=mock_payload,
+                                         encode_type='form')
+        mock__get_parser.assert_called_once_with('json')
+        mock__format_response.assert_called_once_with('mock-response',
+                                                      parser='mock-parser',
+                                                      parser_args={'arg': 1})
+        assert result == 'formated-result'
 
     def test_get_equipment(self, mocker, facts_service):
         building_id = 1
@@ -855,13 +1216,71 @@ class TestFactsService:
                                                       parser_args={'arg': 1})
         assert result == 'formated-result'
 
-    def test_delete_equipment(cls, facts_service):
-        with pytest.raises(NotImplementedError):
-            facts_service.delete_equipment()
+    def test_delete_equipment(self, mocker, facts_service):
+        expected_url = ('https://facts.prod.ecorithm.com/api/'
+                        'v1/building/26/equipment')
+        mock_get = mocker.patch.object(facts_service, 'delete',
+                                       return_value='mock-response')
+        mock__get_parser = mocker.patch.object(facts_service, '_get_parser',
+                                               return_value={'parser':
+                                                             'mock-parser',
+                                                             'parser_args':
+                                                             {'arg': 1}})
+        mock__format_response = mocker.patch.object(facts_service,
+                                                    '_format_response',
+                                                    return_value=('formated'
+                                                                  '-result'))
+        mock_payload = {'equipment_name': ['name-1', 'name-2']}
+        result = facts_service.delete_equipment(building_id=26,
+                                                equipments=['name-1',
+                                                            'name-2'])
+        mock_get.assert_called_once_with(expected_url, data=mock_payload,
+                                         encode_type='form')
+        mock__get_parser.assert_called_once_with('json')
+        mock__format_response.assert_called_once_with('mock-response',
+                                                      parser='mock-parser',
+                                                      parser_args={'arg': 1})
+        assert result == 'formated-result'
 
-    def test_put_equipment(cls, facts_service):
-        with pytest.raises(NotImplementedError):
-            facts_service.put_equipment()
+    def test_put_equipment(self, mocker, facts_service):
+        mock_data = [['VAV_01',
+                      'VAV',
+                      3],
+                     ['AHU_01',
+                      'AHU',
+                      4]]
+        mock_columns = ['equipment_name',
+                        'equipment_type',
+                        'equipment_id']
+        mock_put = mocker.patch.object(facts_service, 'put',
+                                       return_value='mock-response')
+        mock__get_parser = mocker.patch.object(facts_service, '_get_parser',
+                                               return_value={'parser':
+                                                             'mock-parser',
+                                                             'parser_args':
+                                                             {'arg': 1}})
+        mock__format_response = mocker.patch.object(facts_service,
+                                                    '_format_response',
+                                                    return_value=('formated'
+                                                                  '-result'))
+        mock_df = pd.DataFrame(data=mock_data, columns=mock_columns)
+
+        result = facts_service.put_equipment(building_id=26,
+                                             equipments=mock_df)
+        put_input = [{
+            'equipment_name': 'VAV_01',
+            'equipment_type': 'VAV',
+            'equipment_id': 3},
+            {'equipment_name': 'AHU_01',
+             'equipment_type': 'AHU',
+             'equipment_id': 4}]
+        expected_url = ('https://facts.prod.ecorithm.com/api/'
+                        'v1/building/26/equipment')
+        mock_put.assert_called_once_with(expected_url, data=put_input,
+                                         encode_type='json')
+        assert result == 'formated-result'
+        mock__format_response.assert_called()
+        mock__get_parser.assert_called()
 
     def test_get_native_names(self, mocker, facts_service):
         building_id = 1
@@ -892,30 +1311,356 @@ class TestFactsService:
                                                       parser_args={'arg': 1})
         assert result == 'formated-result'
 
-    def test_put_native_names(cls, facts_service):
-        with pytest.raises(NotImplementedError):
-            facts_service.put_native_names()
+    def test_put_native_names(self, mocker, facts_service):
+        mock_data = [['VAV_01',
+                      True,
+                      "Client",
+                      3,
+                      "COV",
+                      "5 minutes"],
+                     ['VAV_02',
+                      True,
+                      "Client",
+                      4,
+                      "COV",
+                      "5 minutes"]]
+        mock_columns = ['native_name', 'expecting_data', 'origin',
+                        'native_name_id', 'trend_type', 'trend_period']
+        mock_put = mocker.patch.object(facts_service, 'put',
+                                       return_value='mock-response')
+        mock__get_parser = mocker.patch.object(facts_service, '_get_parser',
+                                               return_value={'parser':
+                                                             'mock-parser',
+                                                             'parser_args':
+                                                             {'arg': 1}})
+        mock__format_response = mocker.patch.object(facts_service,
+                                                    '_format_response',
+                                                    return_value=('formated'
+                                                                  '-result'))
+        mock_df = pd.DataFrame(data=mock_data, columns=mock_columns)
 
-    def test_delete_native_names(cls, facts_service):
-        with pytest.raises(NotImplementedError):
-            facts_service.delete_native_names()
+        result = facts_service.put_native_names(building_id=26,
+                                                native_names=mock_df)
+        put_input = [{
+            'native_name': 'VAV_01',
+            'expecting_data': True,
+            'origin': "Client",
+            'native_name_id': 3,
+            'trend_type': "COV",
+            'trend_period': "5 minutes"},
+            {'native_name': 'VAV_02',
+             'expecting_data': True,
+             'origin': "Client",
+             'native_name_id': 4,
+             'trend_type': "COV",
+             'trend_period': "5 minutes"}]
+        expected_url = ('https://facts.prod.ecorithm.com/api/'
+                        'v1/building/26/native-names')
+        mock_put.assert_called_once_with(expected_url, data=put_input,
+                                         encode_type='json')
+        assert result == 'formated-result'
+        mock__format_response.assert_called()
+        mock__get_parser.assert_called()
 
-    def test_get_native_names_history(cls, facts_service):
-        with pytest.raises(NotImplementedError):
-            facts_service.get_native_names_history()
+    def test_delete_native_names(self, mocker, facts_service):
+        expected_url = ('https://facts.prod.ecorithm.com/api/'
+                        'v1/building/26/native-names')
+        mock_get = mocker.patch.object(facts_service, 'delete',
+                                       return_value='mock-response')
+        mock__get_parser = mocker.patch.object(facts_service, '_get_parser',
+                                               return_value={'parser':
+                                                             'mock-parser',
+                                                             'parser_args':
+                                                             {'arg': 1}})
+        mock__format_response = mocker.patch.object(facts_service,
+                                                    '_format_response',
+                                                    return_value=('formated'
+                                                                  '-result'))
+        mock_payload = {'native_name': ['name-1', 'name-2']}
+        result = facts_service.delete_native_names(building_id=26,
+                                                   native_names=['name-1',
+                                                                 'name-2'])
+        mock_get.assert_called_once_with(expected_url, data=mock_payload,
+                                         encode_type='form')
+        mock__get_parser.assert_called_once_with('json')
+        mock__format_response.assert_called_once_with('mock-response',
+                                                      parser='mock-parser',
+                                                      parser_args={'arg': 1})
+        assert result == 'formated-result'
 
-    def test_get_unamapped_native_names(cls, facts_service):
-        with pytest.raises(NotImplementedError):
-            facts_service.get_unamapped_native_names()
+    def test_get_native_names_history(self, mocker, facts_service):
+        expected_url = ('https://facts.prod.ecorithm.com/api/'
+                        'v1/building/26/native-name-history')
+        mock_get = mocker.patch.object(facts_service, 'get',
+                                       return_value='mock-response')
+        mock__get_parser = mocker.patch.object(facts_service, '_get_parser',
+                                               return_value={'parser':
+                                                             'mock-parser',
+                                                             'parser_args':
+                                                             {'arg': 1}})
+        mock__format_response = mocker.patch.object(facts_service,
+                                                    '_format_response',
+                                                    return_value=('formated'
+                                                                  '-result'))
+        result = facts_service.get_native_names_history(building_id=26)
+        mock_get.assert_called_once_with(expected_url)
+        mock__get_parser.assert_called_once_with('json')
+        mock__format_response.assert_called_once_with('mock-response',
+                                                      parser='mock-parser',
+                                                      parser_args={'arg': 1})
+        assert result == 'formated-result'
 
-    def test_get_etl_process_history(cls, facts_service):
-        with pytest.raises(NotImplementedError):
-            facts_service.get_etl_process_history()
+    def test_get_unamapped_native_names(self, mocker, facts_service):
+        expected_url = ('https://facts.prod.ecorithm.com/api/'
+                        'v1/building/26/unmapped-native-names')
+        mock_get = mocker.patch.object(facts_service, 'get',
+                                       return_value='mock-response')
+        mock__get_parser = mocker.patch.object(facts_service, '_get_parser',
+                                               return_value={'parser':
+                                                             'mock-parser',
+                                                             'parser_args':
+                                                             {'arg': 1}})
+        mock__format_response = mocker.patch.object(facts_service,
+                                                    '_format_response',
+                                                    return_value=('formated'
+                                                                  '-result'))
+        result = facts_service.get_unamapped_native_names(building_id=26)
+        mock_get.assert_called_once_with(expected_url)
+        mock__get_parser.assert_called_once_with('json')
+        mock__format_response.assert_called_once_with('mock-response',
+                                                      parser='mock-parser',
+                                                      parser_args={'arg': 1})
+        assert result == 'formated-result'
 
-    def test_get_unstored_native_names(cls, facts_service):
-        with pytest.raises(NotImplementedError):
-            facts_service.get_unstored_native_names()
+    def test_get_etl_process_history(self, mocker, facts_service):
+        expected_url = ('https://facts.prod.ecorithm.com/api/'
+                        'v1/building/26/etl-process-history')
+        mock_get = mocker.patch.object(facts_service, 'get',
+                                       return_value='mock-response')
+        mock__get_parser = mocker.patch.object(facts_service, '_get_parser',
+                                               return_value={'parser':
+                                                             'mock-parser',
+                                                             'parser_args':
+                                                             {'arg': 1}})
+        mock__format_response = mocker.patch.object(facts_service,
+                                                    '_format_response',
+                                                    return_value=('formated'
+                                                                  '-result'))
+        result = facts_service.get_etl_process_history(building_id=26,
+                                                       return_limit=10)
+        mock_get.assert_called_once_with(expected_url,
+                                         data={'return_limit': 10})
+        mock__get_parser.assert_called_once_with('json')
+        mock__format_response.assert_called_once_with('mock-response',
+                                                      parser='mock-parser',
+                                                      parser_args={'arg': 1})
+        assert result == 'formated-result'
 
-    def test_get_building_dqi(cls, facts_service):
-        with pytest.raises(NotImplementedError):
-            facts_service.get_building_dqi()
+    def test_get_unstored_native_names(self, mocker, facts_service):
+        expected_url = ('https://facts.prod.ecorithm.com/api/'
+                        'v1/building/26/unstored-native-names')
+        mock_get = mocker.patch.object(facts_service, 'get',
+                                       return_value='mock-response')
+        mock__get_parser = mocker.patch.object(facts_service, '_get_parser',
+                                               return_value={'parser':
+                                                             'mock-parser',
+                                                             'parser_args':
+                                                             {'arg': 1}})
+        mock__format_response = mocker.patch.object(facts_service,
+                                                    '_format_response',
+                                                    return_value=('formated'
+                                                                  '-result'))
+        result = facts_service.get_unstored_native_names(building_id=26)
+        mock_get.assert_called_once_with(expected_url)
+        mock__get_parser.assert_called_once_with('json')
+        mock__format_response.assert_called_once_with('mock-response',
+                                                      parser='mock-parser',
+                                                      parser_args={'arg': 1})
+        assert result == 'formated-result'
+
+    def test_get_building_dqi_json(self, mocker, facts_service):
+        mock_response = mocker.Mock()
+        mock_json_parser = mocker.patch(self.MODULE_PATH +
+                                        '.RequestParser.json_parser')
+        mock_get = mocker.patch.object(facts_service, 'get')
+        mock_get.return_value = mock_response
+        mock_format_response = mocker.patch.object(facts_service,
+                                                   '_format_response')
+        mock_format_response.return_value = 'parsed_result'
+        building_id = 26
+        result_format = 'json'
+        mock_params = {'start_date': '2017-12-20',
+                       'end_date': '2017-12-21',
+                       'dqi_aggregate': 'building_id',
+                       'period': 'day',
+                       'native_name_expression': '.*'}
+        result = facts_service.get_building_dqi(building_id, **mock_params,
+                                                result_format=result_format)
+        assert result == 'parsed_result'
+        mock_get.assert_called_once_with(
+            ('https://facts.prod.ecorithm.com/api/v1/building/26/dqi'),
+            data=mock_params
+            )
+        mock_format_response.assert_called_once_with(
+            mock_response, parser=mock_json_parser,
+            parser_args={})
+
+    def test_get_building_dqi_pandas(self, mocker, facts_service):
+        mock_response = mocker.Mock()
+        mock_pandas_parser = mocker.patch.object(facts_service,
+                                                 '_pandas_dqi_parser')
+        mock_get = mocker.patch.object(facts_service, 'get')
+        mock_get.return_value = mock_response
+        mock_format_response = mocker.patch.object(facts_service,
+                                                   '_format_response')
+        mock_format_response.return_value = 'parsed_result'
+        building_id = 26
+        result_format = 'pandas'
+        mock_params = {'start_date': '2017-12-20',
+                       'end_date': '2017-12-21',
+                       'dqi_aggregate': 'building_id',
+                       'period': 'day',
+                       'native_name_expression': '.*'}
+        result = facts_service.get_building_dqi(building_id, **mock_params,
+                                                result_format=result_format)
+        assert result == 'parsed_result'
+        mock_get.assert_called_once_with(
+            ('https://facts.prod.ecorithm.com/api/v1/building/26/dqi'),
+            data=mock_params
+            )
+        mock_format_response.assert_called_once_with(
+            mock_response, parser=mock_pandas_parser,
+            parser_args={'data_key': 'data'})
+
+    def test_get_building_dqi_tuple(self, mocker, facts_service):
+        mock_response = mocker.Mock()
+        mock_pandas_parser = mocker.patch.object(facts_service,
+                                                 '_tuple_dqi_parser')
+        mock_get = mocker.patch.object(facts_service, 'get')
+        mock_get.return_value = mock_response
+        mock_format_response = mocker.patch.object(facts_service,
+                                                   '_format_response')
+        mock_format_response.return_value = 'parsed_result'
+        building_id = 26
+        result_format = 'tuple'
+        mock_params = {'start_date': '2017-12-20',
+                       'end_date': '2017-12-21',
+                       'dqi_aggregate': 'building_id',
+                       'period': 'day',
+                       'native_name_expression': '.*'}
+        result = facts_service.get_building_dqi(building_id, **mock_params,
+                                                result_format=result_format)
+        assert result == 'parsed_result'
+        mock_get.assert_called_once_with(
+            ('https://facts.prod.ecorithm.com/api/v1/building/26/dqi'),
+            data=mock_params
+            )
+        mock_format_response.assert_called_once_with(
+            mock_response, parser=mock_pandas_parser,
+            parser_args={'data_key': 'data'})
+
+    def test_get_building_dqi_csv(self, mocker, facts_service):
+        mock_response = mocker.Mock()
+        mock_pandas_parser = mocker.patch.object(facts_service,
+                                                 '_csv_dqi_parser')
+        mock_get = mocker.patch.object(facts_service, 'get')
+        mock_get.return_value = mock_response
+        mock_format_response = mocker.patch.object(facts_service,
+                                                   '_format_response')
+        mock_format_response.return_value = 'parsed_result'
+        building_id = 26
+        result_format = 'csv'
+        mock_params = {'start_date': '2017-12-20',
+                       'end_date': '2017-12-21',
+                       'dqi_aggregate': 'building_id',
+                       'period': 'day',
+                       'native_name_expression': '.*'}
+        result = facts_service.get_building_dqi(building_id, **mock_params,
+                                                result_format=result_format)
+        assert result == 'parsed_result'
+        mock_get.assert_called_once_with(
+            ('https://facts.prod.ecorithm.com/api/v1/building/26/dqi'),
+            data=mock_params
+            )
+        mock_format_response.assert_called_once_with(
+            mock_response, parser=mock_pandas_parser,
+            parser_args={'data_key': 'data'})
+
+    def test_get_building_dqi_invalid(self, mocker, facts_service):
+
+        mocker.patch.object(facts_service, 'get')
+        mock_format_response = mocker.patch.object(facts_service,
+                                                   '_format_response')
+        mock_format_response.return_value = 'parsed_result'
+        building_id = 26
+        result_format = 'arrows'
+        mock_params = {'start_date': '2017-12-20',
+                       'end_date': '2017-12-21',
+                       'dqi_aggregate': 'building_id',
+                       'period': 'day',
+                       'native_name_expression': '.*'}
+        with pytest.raises(ValueError):
+            facts_service.get_building_dqi(building_id,
+                                           **mock_params,
+                                           result_format=result_format)
+
+    def test__tuple_dqi_parser(self, mocker, facts_service):
+        mock_response = mocker.Mock()
+        mock_response.json.return_value = {"data": {"26": {
+            "2017-12-20 00:00:00": 71.78,
+            "2017-12-21 00:00:00": 72.78}}}
+        tuple_names = ['aggregate', 'timestamp', 'dqi']
+
+        response_tuple = namedtuple('response_tuple', tuple_names)
+        expected_result = [response_tuple(**{
+                           'aggregate': "26",
+                           'timestamp': "2017-12-20 00:00:00",
+                           'dqi': 71.78}),
+                           response_tuple(**{'aggregate': "26",
+                                             'timestamp':
+                                             "2017-12-21 00:00:00",
+                                             'dqi': 72.78})]
+
+        result = facts_service._tuple_dqi_parser(mock_response)
+        assert result == expected_result
+
+    def test__tuple_dqi_error(self, mocker, facts_service):
+        mock_response = mocker.Mock()
+        mock_response.json.side_effect = ValueError
+        mock_response.text = 'error'
+        with pytest.raises(RequestParserError):
+            facts_service._tuple_dqi_parser(mock_response)
+
+    def test__pandas_dqi_parser(self, mocker, facts_service):
+        tuple_names = ['aggregate', 'timestamp', 'dqi']
+        response_tuple = namedtuple('response_tuple', tuple_names)
+        mock_tuples = [response_tuple(**{'aggregate': "26",
+                                         'timestamp': "2017-12-20 00:00:00",
+                                         'dqi': 71.78}),
+                       response_tuple(**{'aggregate': "26",
+                                         'timestamp':
+                                         "2017-12-21 00:00:00",
+                                         'dqi': 72.78})]
+        mocker.patch.object(facts_service, '_tuple_dqi_parser',
+                            return_value=mock_tuples)
+        expected_data = [['26', "2017-12-20 00:00:00", 71.78],
+                         ['26', "2017-12-21 00:00:00", 72.78]]
+        expected_df = pd.DataFrame(columns=tuple_names, data=expected_data)
+        mock_response = mocker.Mock()
+
+        result = facts_service._pandas_dqi_parser(mock_response)
+        pd.testing.assert_frame_equal(expected_df, result)
+
+    def test__csv_dqi_parser(self, mocker, facts_service):
+        tuple_names = ['aggregate', 'timestamp', 'dqi']
+        expected_data = [['26', "2017-12-20 00:00:00", 71.78],
+                         ['26', "2017-12-21 00:00:00", 72.78]]
+        expected_df = pd.DataFrame(columns=tuple_names, data=expected_data)
+        mock_response = mocker.Mock()
+        mocker.patch.object(facts_service, '_tuple_dqi_parser',
+                            return_value=expected_df)
+
+        result = facts_service._csv_dqi_parser(mock_response)
+        assert result == ('aggregate,timestamp,dqi\n'
+                          '26,2017-12-20 00:00:00,71.78\n'
+                          '26,2017-12-21 00:00:00,72.78\n')
