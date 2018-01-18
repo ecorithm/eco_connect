@@ -31,4 +31,3 @@ or contact support at `help@ecorithm.com`
 - `python3 setup.py sdist`
 - `twine upload dist/*`
 - enter the username / password for the pypi account found on ecorithm's one-password.
-- the username / password can be found
