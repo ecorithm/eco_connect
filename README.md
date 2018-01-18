@@ -25,3 +25,10 @@ A wrapper for connecting to Ecorithm's API Platform through python
 
 - For additional resources please refer to documentation at `https://django.prod.ecorithm.com/`
 or contact support at `help@ecorithm.com`
+
+## Deploying to pypi
+- To deploy the latest distribution to pypi, run the following commands:
+- `python3 setup.py sdist`
+- `twine upload dist/*`
+- enter the username / password for the pypi account found on ecorithm's one-password.
+- the username / password can be found
