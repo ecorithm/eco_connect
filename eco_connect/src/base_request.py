@@ -71,9 +71,9 @@ class BaseRequest:
 
         else:
             try:
-                raise InvalidRequest(response.json(), response.status_code)
+                return response.json()
             except ValueError:
-                raise InvalidRequest(response.text, response.status_code)
+                return response.text
 
     def _get_parser(self, result_format, data_key='data'):
         parser = {'parser': None, 'parser_args': {}}

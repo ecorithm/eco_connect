@@ -158,12 +158,11 @@ class TestBaseRequest():
         parser_args = {'arg1': 1, 'arg2': 2}
         mock_response.status_code = 400
 
-        with pytest.raises(InvalidRequest):
-            base_request._format_response(
-                mock_response,
-                parser=mock_result_parser,
-                parser_args=parser_args)
-            mock_response.json.asset_called_once()
+        base_request._format_response(
+            mock_response,
+            parser=mock_result_parser,
+            parser_args=parser_args)
+        mock_response.json.asset_called_once()
 
     def test__format_response_400_text(self, mocker, base_request):
         mock_response = mocker.Mock()
@@ -174,12 +173,11 @@ class TestBaseRequest():
         parser_args = {'arg1': 1, 'arg2': 2}
         mock_response.status_code = 400
 
-        with pytest.raises(InvalidRequest):
-            base_request._format_response(
-                mock_response,
-                parser=mock_result_parser,
-                parser_args=parser_args)
-            mock_response.text.asset_called_once()
+        base_request._format_response(
+            mock_response,
+            parser=mock_result_parser,
+            parser_args=parser_args)
+        mock_response.text.asset_called_once()
 
     def test__format_response_401_text(self, mocker, base_request):
         mock_response = mocker.Mock()

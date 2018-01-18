@@ -9,7 +9,7 @@ def get_requirements():
 
 setup(
     name='eco-connect',
-    version='0.16.0',
+    version='0.17.0',
     license="Proprietary",
     url='https://github.com/ecorithm/eco-connect',
     packages=find_packages(exclude=['tests*']),
