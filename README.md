@@ -6,8 +6,7 @@ A wrapper for connecting to Ecorithm's API Platform through python
 
 ## Requirements
 - The package can be installed using pip.
-  `pip3 install git+git://github.com/ecorithm/eco-connect.git@master --upgrade
-`
+  `pip3 install eco-connect --upgrade`
 - This module requires authentication for the connectors to be use. Credentials are loaded through your environment variables. Create the following env variables with your provided ecorithm credentials:
 `export ECO_CONNECT_USER=MyEcorithmUserName`
 `export ECO_CONNECT_PASSWORD=MyEcorithmPASSWord`
