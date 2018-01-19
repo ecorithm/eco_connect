@@ -27,8 +27,8 @@ or contact support at `help@ecorithm.com`
 
 ## Deploying to pypi
 - To deploy the latest distribution to pypi, run the following commands from the root project folder:
+- rm -rf `dist/`
 - `python3 setup.py sdist`
-- `python3 setup.py bdist_wheel --universal`
 - `twine upload dist/*`
 - enter the username / password for the pypi account found on ecorithm's one-password.
 - latest version to pip install can be found here: `https://pypi.python.org/pypi/eco-connect`
