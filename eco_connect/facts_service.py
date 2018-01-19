@@ -274,12 +274,12 @@ class FactsService(BaseRequest):
         url = self.hostname + f'building/{building_id}/point-mapping'
         data = {
             'is_active': is_active,
-            'eco_point_ids': eco_point_ids,
-            'equipment_names': equipment_names,
-            'equipment_types': equipment_types,
-            'point_classes': point_classes,
-            'display_names': display_names,
-            'native_names': native_names,
+            'eco_point_id': eco_point_ids,
+            'equipment_name': equipment_names,
+            'equipment_type': equipment_types,
+            'point_class': point_classes,
+            'display_name': display_names,
+            'native_name': native_names,
             'point_class_expression': point_class_expression,
             'display_name_expression': display_name_expression,
             'native_name_expression': native_name_expression}
