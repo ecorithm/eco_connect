@@ -1,0 +1,140 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Eco-Connect Documentation &#8212; eco-connect 0.18 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.18',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="FactsService Documentation" href="eco_connect.facts_service.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="eco_connect.facts_service.html" title="FactsService Documentation"
+             accesskey="N">next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">eco-connect 0.18 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="eco-connect-documentation">
+<h1>Eco-Connect Documentation<a class="headerlink" href="#eco-connect-documentation" title="Permalink to this headline">¶</a></h1>
+<p>Welcome to documentation for eco-connect, a thin python wrapper
+for Ecorithm’s API Platform.</p>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>eco-connect can be installed via pip from PyPI.</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>pip install eco-connect
+</pre></div>
+</div>
+<p>This will likely require the installation of a number of dependencies,
+including Pandas, will require a compiler to compile required bits of code,
+and can take a few minutes to complete.</p>
+<p>All supported connectors require authentication via your provided
+ecorithm username and password. These credentials are set through
+environment variables. These can be set by running the following commands:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">ECO_CONNECT_USER</span><span class="o">=</span>MY_ECORITHM_USERNAME
+<span class="nb">export</span> <span class="nv">ECO_CONNECT_USER</span><span class="o">=</span>MY_ECORITHM_PASSWORD
+</pre></div>
+</div>
+<p>To verify your credentials and that the package has been installed,
+run the following in a python3 interpreter of your choice:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">eco_connect</span> <span class="kn">import</span> <span class="n">validate_credentials</span>
+
+<span class="n">validate_credentials</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>If everything was setup properly, you should see the print out:</p>
+<p><em>Ecorithm credentials successfully validated!</em></p>
+</div>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>All connectors can be imported directly from eco_connect.
+For example, to import the FactsService connector:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">eco_connect</span> <span class="kn">import</span> <span class="n">FactsService</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="supported-connectors">
+<h2>Supported Connectors<a class="headerlink" href="#supported-connectors" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="eco_connect.facts_service.html">FactsService Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="eco_connect.facts_service.html#example-usage">Example Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="eco_connect.facts_service.html#supported-methods">Supported Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="eco_connect.facts_service.html#supported-formats">Supported Formats</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Next topic</h4>
+  <p class="topless"><a href="eco_connect.facts_service.html"
+                        title="next chapter">FactsService Documentation</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="eco_connect.facts_service.html" title="FactsService Documentation"
+             >next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">eco-connect 0.18 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, ecorithm.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.6.
+    </div>
+  </body>
+</html>

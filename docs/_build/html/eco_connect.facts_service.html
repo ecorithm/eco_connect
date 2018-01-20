@@ -1,0 +1,253 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>FactsService Documentation &#8212; eco-connect 0.18 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.18',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Eco-Connect Documentation" href="eco-connect-doc.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="eco-connect-doc.html" title="Eco-Connect Documentation"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="eco-connect-doc.html">eco-connect 0.18 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="factsservice-documentation">
+<h1>FactsService Documentation<a class="headerlink" href="#factsservice-documentation" title="Permalink to this headline">¶</a></h1>
+<p>This connector is used to access the facts-service api via python.
+For direct api documentation, please refer to
+<a class="reference external" href="https://facts.prod.ecorithm.com/">https://facts.prod.ecorithm.com/</a>.</p>
+<div class="section" id="example-usage">
+<h2>Example Usage<a class="headerlink" href="#example-usage" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">eco_connect</span> <span class="kn">import</span> <span class="n">FactsService</span>
+
+<span class="n">facts_service</span> <span class="o">=</span> <span class="n">FactsService</span><span class="p">()</span>
+
+<span class="n">facts_service</span><span class="o">.</span><span class="n">get_facts</span><span class="p">(</span><span class="n">building_id</span><span class="o">=</span><span class="mi">26</span><span class="p">,</span>
+                        <span class="n">start_date</span><span class="o">=</span><span class="s1">&#39;2017-12-20 00:00&#39;</span><span class="p">,</span>
+                        <span class="n">end_date</span><span class="o">=</span><span class="s1">&#39;2017-12-21 00:00&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="supported-methods">
+<h2>Supported Methods<a class="headerlink" href="#supported-methods" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="eco_connect.FactsService">
+<em class="property">class </em><code class="descclassname">eco_connect.</code><code class="descname">FactsService</code><span class="sig-paren">(</span><em>environment_name='prod'</em>, <em>version='v1'</em><span class="sig-paren">)</span><a class="headerlink" href="#eco_connect.FactsService" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="eco_connect.FactsService.delete_building">
+<code class="descname">delete_building</code><span class="sig-paren">(</span><em>building_id</em><span class="sig-paren">)</span><a class="headerlink" href="#eco_connect.FactsService.delete_building" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="eco_connect.FactsService.delete_equipment">
+<code class="descname">delete_equipment</code><span class="sig-paren">(</span><em>building_id</em>, <em>equipments=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#eco_connect.FactsService.delete_equipment" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="eco_connect.FactsService.delete_equipment_type">
+<code class="descname">delete_equipment_type</code><span class="sig-paren">(</span><em>equipment_type</em><span class="sig-paren">)</span><a class="headerlink" href="#eco_connect.FactsService.delete_equipment_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="eco_connect.FactsService.delete_native_names">
+<code class="descname">delete_native_names</code><span class="sig-paren">(</span><em>building_id</em>, <em>native_names=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#eco_connect.FactsService.delete_native_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="eco_connect.FactsService.delete_point_class">
+<code class="descname">delete_point_class</code><span class="sig-paren">(</span><em>point_class</em><span class="sig-paren">)</span><a class="headerlink" href="#eco_connect.FactsService.delete_point_class" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="eco_connect.FactsService.delete_point_mapping">
+<code class="descname">delete_point_mapping</code><span class="sig-paren">(</span><em>building_id</em>, <em>eco_point_ids=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#eco_connect.FactsService.delete_point_mapping" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="eco_connect.FactsService.get_avg_facts">
+<code class="descname">get_avg_facts</code><span class="sig-paren">(</span><em>building_id</em>, <em>start_date</em>, <em>end_date</em>, <em>start_hour='00:00'</em>, <em>end_hour='23:55'</em>, <em>period='day'</em>, <em>aggregate='eco_point_id'</em>, <em>equipment_names=[]</em>, <em>equipment_types=[]</em>, <em>point_classes=[]</em>, <em>eco_point_ids=[]</em>, <em>display_names=[]</em>, <em>native_names=[]</em>, <em>point_class_expression=[]</em>, <em>native_name_expression=[]</em>, <em>display_name_expression=[]</em>, <em>result_format='pandas'</em><span class="sig-paren">)</span><a class="headerlink" href="#eco_connect.FactsService.get_avg_facts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="eco_connect.FactsService.get_building_dqi">
+<code class="descname">get_building_dqi</code><span class="sig-paren">(</span><em>building_id</em>, <em>start_date</em>, <em>end_date</em>, <em>dqi_aggregate='building_id'</em>, <em>period='day'</em>, <em>native_name_expression='.*'</em>, <em>result_format='pandas'</em><span class="sig-paren">)</span><a class="headerlink" href="#eco_connect.FactsService.get_building_dqi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="eco_connect.FactsService.get_buildings">
+<code class="descname">get_buildings</code><span class="sig-paren">(</span><em>building_id=None</em>, <em>is_active=True</em>, <em>result_format='pandas'</em><span class="sig-paren">)</span><a class="headerlink" href="#eco_connect.FactsService.get_buildings" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="eco_connect.FactsService.get_equipment">
+<code class="descname">get_equipment</code><span class="sig-paren">(</span><em>building_id</em>, <em>equipment_name=None</em>, <em>equipment_type=None</em>, <em>is_active=True</em>, <em>result_format='pandas'</em><span class="sig-paren">)</span><a class="headerlink" href="#eco_connect.FactsService.get_equipment" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="eco_connect.FactsService.get_equipment_types">
+<code class="descname">get_equipment_types</code><span class="sig-paren">(</span><em>equipment_type=None</em>, <em>is_active=True</em>, <em>result_format='pandas'</em><span class="sig-paren">)</span><a class="headerlink" href="#eco_connect.FactsService.get_equipment_types" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="eco_connect.FactsService.get_etl_process_history">
+<code class="descname">get_etl_process_history</code><span class="sig-paren">(</span><em>building_id</em>, <em>return_limit=None</em><span class="sig-paren">)</span><a class="headerlink" href="#eco_connect.FactsService.get_etl_process_history" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="eco_connect.FactsService.get_facts">
+<code class="descname">get_facts</code><span class="sig-paren">(</span><em>building_id</em>, <em>start_date</em>, <em>end_date</em>, <em>start_hour='00:00'</em>, <em>end_hour='23:55'</em>, <em>equipment_names=[]</em>, <em>equipment_types=[]</em>, <em>point_classes=[]</em>, <em>eco_point_ids=[]</em>, <em>display_names=[]</em>, <em>native_names=[]</em>, <em>point_class_expression=[]</em>, <em>native_name_expression=[]</em>, <em>display_name_expression=[]</em>, <em>result_format='pandas'</em><span class="sig-paren">)</span><a class="headerlink" href="#eco_connect.FactsService.get_facts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="eco_connect.FactsService.get_native_names">
+<code class="descname">get_native_names</code><span class="sig-paren">(</span><em>building_id</em>, <em>native_name=None</em>, <em>is_active=True</em>, <em>result_format='pandas'</em><span class="sig-paren">)</span><a class="headerlink" href="#eco_connect.FactsService.get_native_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="eco_connect.FactsService.get_native_names_history">
+<code class="descname">get_native_names_history</code><span class="sig-paren">(</span><em>building_id</em><span class="sig-paren">)</span><a class="headerlink" href="#eco_connect.FactsService.get_native_names_history" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="eco_connect.FactsService.get_point_classes">
+<code class="descname">get_point_classes</code><span class="sig-paren">(</span><em>point_class=None</em>, <em>is_active=True</em>, <em>result_format='pandas'</em><span class="sig-paren">)</span><a class="headerlink" href="#eco_connect.FactsService.get_point_classes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="eco_connect.FactsService.get_point_mapping">
+<code class="descname">get_point_mapping</code><span class="sig-paren">(</span><em>building_id</em>, <em>equipment_names=[]</em>, <em>equipment_types=[]</em>, <em>point_classes=[]</em>, <em>eco_point_ids=[]</em>, <em>display_names=[]</em>, <em>native_names=[]</em>, <em>point_class_expression=[]</em>, <em>native_name_expression=[]</em>, <em>display_name_expression=[]</em>, <em>is_active=True</em>, <em>result_format='pandas'</em><span class="sig-paren">)</span><a class="headerlink" href="#eco_connect.FactsService.get_point_mapping" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="eco_connect.FactsService.get_unamapped_native_names">
+<code class="descname">get_unamapped_native_names</code><span class="sig-paren">(</span><em>building_id</em><span class="sig-paren">)</span><a class="headerlink" href="#eco_connect.FactsService.get_unamapped_native_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="eco_connect.FactsService.get_unstored_native_names">
+<code class="descname">get_unstored_native_names</code><span class="sig-paren">(</span><em>building_id</em><span class="sig-paren">)</span><a class="headerlink" href="#eco_connect.FactsService.get_unstored_native_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="eco_connect.FactsService.put_building">
+<code class="descname">put_building</code><span class="sig-paren">(</span><em>building</em>, <em>building_id=None</em><span class="sig-paren">)</span><a class="headerlink" href="#eco_connect.FactsService.put_building" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="eco_connect.FactsService.put_equipment">
+<code class="descname">put_equipment</code><span class="sig-paren">(</span><em>building_id</em>, <em>equipments=Empty DataFrame Columns: [] Index: []</em><span class="sig-paren">)</span><a class="headerlink" href="#eco_connect.FactsService.put_equipment" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="eco_connect.FactsService.put_equipment_type">
+<code class="descname">put_equipment_type</code><span class="sig-paren">(</span><em>equipment_type</em>, <em>equipment_type_id=None</em><span class="sig-paren">)</span><a class="headerlink" href="#eco_connect.FactsService.put_equipment_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="eco_connect.FactsService.put_facts">
+<code class="descname">put_facts</code><span class="sig-paren">(</span><em>building_id</em>, <em>data=Empty DataFrame Columns: [] Index: []</em><span class="sig-paren">)</span><a class="headerlink" href="#eco_connect.FactsService.put_facts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="eco_connect.FactsService.put_native_names">
+<code class="descname">put_native_names</code><span class="sig-paren">(</span><em>building_id</em>, <em>native_names=Empty DataFrame Columns: [] Index: []</em><span class="sig-paren">)</span><a class="headerlink" href="#eco_connect.FactsService.put_native_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="eco_connect.FactsService.put_point_class">
+<code class="descname">put_point_class</code><span class="sig-paren">(</span><em>point_class</em>, <em>point_class_id=None</em><span class="sig-paren">)</span><a class="headerlink" href="#eco_connect.FactsService.put_point_class" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="eco_connect.FactsService.put_point_mapping">
+<code class="descname">put_point_mapping</code><span class="sig-paren">(</span><em>building_id</em>, <em>point_mapping=Empty DataFrame Columns: [] Index: []</em><span class="sig-paren">)</span><a class="headerlink" href="#eco_connect.FactsService.put_point_mapping" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="supported-formats">
+<h2>Supported Formats<a class="headerlink" href="#supported-formats" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Pandas DataFrame</li>
+<li>List of Named tuples</li>
+<li>Csv</li>
+<li>Json (raw API response)</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="eco-connect-doc.html"
+                        title="previous chapter">Eco-Connect Documentation</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="eco-connect-doc.html" title="Eco-Connect Documentation"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="eco-connect-doc.html">eco-connect 0.18 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, ecorithm.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.6.
+    </div>
+  </body>
+</html>
