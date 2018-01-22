@@ -10,6 +10,21 @@ from eco_connect.src.errors import RequestParserError
 
 
 class FactsService(BaseRequest):
+    """A class to connect to Ecorithm's facts-service api
+    (https://facts.prod.ecorithm.com/api/v1/).
+
+        **Args**:
+
+        **Kwargs**:
+           **environment_name** (str): "Api environment. Supported environments
+           ('Prod', 'Qa')
+
+                *Example*: 'prod'
+
+           version (str): Api version. Supported versions: ('v1')
+
+                *Example*: 'prod'
+    """
 
     def __init__(self, environment_name='prod', version='v1'):
         self.env = self._validate_env(environment_name=environment_name)
@@ -32,6 +47,222 @@ class FactsService(BaseRequest):
                   native_name_expression=[],
                   display_name_expression=[],
                   result_format='pandas'):
+        """Return the sensor facts for a building.
+
+        **Args**:
+
+           **building_id** (str):  Building id to get facts for.
+
+                *Example*: 1
+
+           **start_date** (str):  Start date to return facts for.
+
+                *Example*: '2017-12-20 00:00'
+
+           **end_date** (str):  End date to return facts for.
+
+                *Example*: '2017-12-21 23:55'
+
+        **Kwargs**:
+
+           **start_hour** (str): Start hour to filter facts for.
+
+                *Example*: '08:00'
+
+           **end_hour** (str): End hour to filter facts for.
+
+                *Example*: '17:00'
+
+           **equipment_names** (list):  List of equipment names to filter facts
+           for.
+
+                *Example*: ['VAV_01', 'VAV_02']
+
+           **equipment_types** (list):  List of equipment types to filter facts
+           for.
+
+                *Example*: ['VAV', 'AHU']
+
+           **point_classes** (list):  List of point_classes to filter facts
+           for.
+
+                *Example*: ['SpaceAirTemperature', 'CoolingCoilUnitFeedback']
+
+           **eco_point_ids** (list):  List of eco_point_ids to filter facts
+           for.
+
+                *Example*: [1, 2, 3]
+
+           **display_names** (list):  List of display_names to filter facts
+           for.
+
+                *Example*: ['SpaceTemp', 'AirFlow']
+
+           **native_names** (list):  List of native_names to filter facts
+           for.
+
+                *Example*: ['name-1', 'name-2']
+
+           **point_class_expression** (list):  List of equipment / equipment type +
+           point class regex expressions to filter facts. Equipment / equipment
+           type and point class regex expressions are space delimited.
+           for.
+
+                *Example*: ['VAV.* SpaceAirTemperature', 'AHU Space.*']
+
+           **native_name_expression** (list):  List of native-name regex
+           expressions to filter facts.
+
+                *Example*: ['nam.*', 'nati-.*']
+
+           **display_name_expression** (list): List of equipment / equipment type +
+           display name regex expressions to filter facts. Equipment /
+           equipment type and point class regex expressions are space
+           delimited.
+
+                *Example*: ['VAV.* SpaceAirTemperature', 'AHU Space.*']
+
+           **result_format** (str): Output format type. (Pandas, tuple, csv,
+           json)
+
+                *Example*: 'pandas'
+
+
+
+        **Returns**:
+           (DataFrame or list or csv or json depending on the requested
+           result format).
+
+        *DataFrame Example*::
+
+            index     fact_time       fact_value  eco_point_id  display_name   native_name          point_class         equipment  equipment_type
+            =====  ================   ==========  ============  ============   ===========  ==========================  =========  ==============
+            0      2017-12-20 00:00       1            192       'SpaceTemp'     'name-1'    'SpaceAirTemperature'       'VAV-01'       'VAV'
+            1      2017-12-21 00:00       2            304       'CoolingCoil'   'name-2'    'CoolingCoilUnitFeedback'   'AHU-01'       'AHU'
+
+
+        *Json Example*::
+
+            {
+              "data": [
+                {
+                  "87238": {
+                    "data": {
+                      "2017-08-01 00:00": 67.5,
+                      "2017-08-01 00:05": 68.5
+                    },
+                    "meta": {
+                      "display_name": "SpaceTemp",
+                      "eco_point_id": 85743,
+                      "native_name": "UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.ZN-T",
+                      "equipment": "VAV-301",
+                      "equipment_type": "VAV",
+                      "point_class": "SpaceAirTemperature"
+                    }
+                  },
+                  "87239": {
+                    "data": {
+                      "2017-08-01 00:00": 0,
+                      "2017-08-01 00:05": 100
+                    },
+                    "meta": {
+                      "display_name": "Cooling",
+                      "eco_point_id": 87239,
+                      "native_name": "UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.CV",
+                      "equipment": "VAV_301",
+                      "equipment_type": "VAV",
+                      "point_class": "CoolingCoilUnitFeedback"
+                    }
+                  }
+                }
+              ]
+            }
+
+
+        *Csv Example*::
+
+                ',fact_time,fact_value,point_class,display_name,native_name,
+                equipment_type,equipment_name,eco_point_id
+
+
+                0,2017-12-20 00:05,70.1923,SpaceAirTemperature,SpaceTemp,
+                UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.ZN-T,VAV,VAV_301,85743,
+
+
+                2017-12-20 00:05,76.08,SpaceAirTemperatureSetPointWhenCooling,
+                SpaceTempSetPoint_ActualCooling,
+                UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.ACLG-SET,VAV,VAV_301,
+                85744,
+
+                2017-12-20 00:05,70.08,
+                SpaceAirTemperatureSetPointWhenHeating,
+                SpaceTempSetPoint_ActualHeating,
+                UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.AHTG-SET,VAV,VAV_301,85745'
+
+
+        *Tuple Example*::
+
+            [response_tuple(fact_time='2017-12-20 00:05', fact_value=70.1923,
+                            point_class='SpaceAirTemperature', display_name='SpaceTemp',
+                            native_name='UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.ZN-T',
+                            equipment_type='VAV', equipment_name='VAV_301', eco_point_id=85743),
+             response_tuple(fact_time='2017-12-20 00:05', fact_value=76.08,
+                            point_class='SpaceAirTemperatureSetPointWhenCooling',
+                            display_name='SpaceTempSetPoint_ActualCooling',
+                            native_name='UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.ACLG-SET',
+                            equipment_type='VAV', equipment_name='VAV_301', eco_point_id=85744)]
+
+        .. note::
+           And invalid api request will return back the raw api response.
+
+           *Example*:
+            {"message": {"NoData": "No data found for the provided filters.
+            This building has data from '2017-12-20 00:00'
+            to '2017-12-21 00:00'"}}
+
+
+    **Example Usage:**
+
+    >>> facts_service.get_facts(building_id=26,
+                                start_date='2017-12-20 00:00',
+                                end_date='2017-12-21 00:00',
+                                result_format='json')
+        {
+          "data": [
+            {
+              "87238": {
+                "data": {
+                  "2017-08-01 00:00": 67.5,
+                  "2017-08-01 00:05": 68.5
+                },
+                "meta": {
+                  "display_name": "SpaceTemp",
+                  "eco_point_id": 85743,
+                  "native_name": "UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.ZN-T",
+                  "equipment": "VAV-301",
+                  "equipment_type": "VAV",
+                  "point_class": "SpaceAirTemperature"
+                }
+              },
+              "87239": {
+                "data": {
+                  "2017-08-01 00:00": 0,
+                  "2017-08-01 00:05": 100
+                },
+                "meta": {
+                  "display_name": "Cooling",
+                  "eco_point_id": 87239,
+                  "native_name": "UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.CV",
+                  "equipment": "VAV_301",
+                  "equipment_type": "VAV",
+                  "point_class": "CoolingCoilUnitFeedback"
+                }
+              }
+            }
+          ]
+        }
+
+        """
 
         url = self.hostname + f'building/{building_id}/facts'
 
@@ -98,7 +329,7 @@ class FactsService(BaseRequest):
 
     def _csv_fact_parser(self, response, data_key='data'):
         result_df = self._pandas_fact_parser(response, data_key)
-        return result_df.to_csv
+        return result_df.to_csv()
 
     def put_facts(self, building_id, data=pd.DataFrame()):
         url = self.hostname + f'building/{building_id}/facts'

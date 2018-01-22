@@ -8,7 +8,7 @@ def get_requirements():
 
 setup(
     name='eco-connect',
-    version='0.18.3',
+    version='0.18.4',
     description='Ecorithm\'s eco-connect ',
     license="Proprietary",
     url='https://github.com/ecorithm/eco-connect',

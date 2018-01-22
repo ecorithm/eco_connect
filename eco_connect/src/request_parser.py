@@ -52,14 +52,6 @@ class RequestParser:
 
     @classmethod
     def csv_parser(cls, response,
-                   data_key=None,
-                   download_folder=os.path.expanduser('~') + '/downloads/',
-                   file_name='data.csv'):
+                   data_key=None):
         result_df = cls.pandas_parser(response, data_key=data_key)
-        try:
-            os.makedirs(download_folder, exist_ok=True)
-        except OSError:
-            raise ValueError(f'Folder: {download_folder} is not a valid'
-                             ' folder path!')
-        result_df.to_csv(download_folder + file_name, index=None)
-        return result_df
+        return result_df.to_csv()
