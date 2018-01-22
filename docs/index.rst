@@ -3,6 +3,10 @@ Eco-Connect Documentation
 Welcome to documentation for eco-connect, a thin python wrapper
 for Ecorithm's API Platform.
 
+Requirements
+--------------------
+* python >= 3.6
+
 Installation
 --------------------
 eco-connect can be installed via pip from PyPI.

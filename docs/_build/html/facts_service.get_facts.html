@@ -112,13 +112,15 @@ equipment type and point class regex expressions are space
 delimited.</p>
 <blockquote>
 <div><em>Example</em>: [‘VAV.* SpaceAirTemperature’, ‘AHU Space.*’]</div></blockquote>
-<p><strong>result_format</strong> (str): Output format type. (Pandas, tuple, csv, json)</p>
+<p><strong>result_format</strong> (str): Output format type. (Pandas, tuple, csv,
+json)</p>
 <blockquote>
 <div><em>Example</em>: ‘pandas’</div></blockquote>
 </div></blockquote>
 <dl class="docutils">
 <dt><strong>Returns</strong>:</dt>
-<dd>(DataFrame or list or csv or json).</dd>
+<dd>(DataFrame or list or csv or json depending on the requested
+result format).</dd>
 </dl>
 <p><em>DataFrame Example</em>:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">index</span>     <span class="n">fact_time</span>       <span class="n">fact_value</span>  <span class="n">eco_point_id</span>  <span class="n">display_name</span>   <span class="n">native_name</span>          <span class="n">point_class</span>         <span class="n">equipment</span>  <span class="n">equipment_type</span>
