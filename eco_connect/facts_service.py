@@ -224,6 +224,7 @@ class FactsService(BaseRequest):
 
 
     **Example Usage:**
+
     >>> from eco_connect import FactsService
     >>> facts_service = FactsService()
     >>> facts_service.get_facts(building_id=26,
