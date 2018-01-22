@@ -16,7 +16,7 @@ class FactsService(BaseRequest):
         **Args**:
 
         **Kwargs**:
-           **environment_name** (str): "Api environment. Supported environments
+           environment_name (str): "Api environment. Supported environments
            ('Prod', 'Qa')
 
                 *Example*: 'prod'
