@@ -225,6 +225,7 @@ class FactsService(BaseRequest):
 
     **Example Usage:**
 
+    >>> facts_service = FactsService()
     >>> facts_service.get_facts(building_id=26,
                                 start_date='2017-12-20 00:00',
                                 end_date='2017-12-21 00:00',
