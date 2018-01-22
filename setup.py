@@ -11,6 +11,7 @@ setup(
     version='0.18.4',
     description='Ecorithm\'s eco-connect ',
     license="Proprietary",
+    python_requires='>=3.6',
     url='https://github.com/ecorithm/eco-connect',
     packages=find_packages(exclude=['tests*']),
     include_package_data=True,
