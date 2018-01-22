@@ -335,6 +335,7 @@ class FactsService(BaseRequest):
         return result_df.to_csv()
 
     def put_facts(self, building_id, data=pd.DataFrame()):
+        """Upload a dataframe of facts for a building id."""
         url = self.hostname + f'building/{building_id}/facts'
         input_data = list(data.T.to_dict().values())
         response = self.put(url, data=input_data, encode_type='json')
@@ -361,6 +362,7 @@ class FactsService(BaseRequest):
                       native_name_expression=[],
                       display_name_expression=[],
                       result_format='pandas'):
+        """Return facts using the specified aggregate."""
         url = self.hostname + f'building/{building_id}/avg-facts'
         data = {
             'start_date': start_date,
@@ -430,6 +432,7 @@ class FactsService(BaseRequest):
 
     def get_buildings(self, building_id=None,
                       is_active=True, result_format='pandas'):
+        """Return the meta information for buildings."""
         url = self.hostname + f'buildings'
         params = {'building_id': building_id, 'is_active': is_active}
         response = self.get(url, data=params)
@@ -505,6 +508,7 @@ class FactsService(BaseRequest):
                           display_name_expression=[],
                           is_active=True,
                           result_format='pandas'):
+        """Get the point mapping for a building id."""
         url = self.hostname + f'building/{building_id}/point-mapping'
         data = {
             'is_active': is_active,
@@ -580,6 +584,7 @@ class FactsService(BaseRequest):
     def get_equipment(self, building_id, equipment_name=None,
                       equipment_type=None,
                       is_active=True, result_format='pandas'):
+        """Get the equipment for a building id."""
         url = self.hostname + f'building/{building_id}/equipment'
         params = {'equipment_type': equipment_type,
                   'is_active': is_active,
@@ -616,6 +621,7 @@ class FactsService(BaseRequest):
     def get_native_names(self, building_id,
                          native_name=None,
                          is_active=True, result_format='pandas'):
+        """Get the native-names for a building id."""
         url = self.hostname + f'building/{building_id}/native-names'
         params = {'native_name': native_name,
                   'is_active': is_active}
