@@ -23,7 +23,7 @@ class FactsService(BaseRequest):
 
            version (str): Api version. Supported versions: ('v1')
 
-                *Example*: 'prod'
+                *Example*: 'v1'
     """
 
     def __init__(self, environment_name='prod', version='v1'):
@@ -48,6 +48,8 @@ class FactsService(BaseRequest):
                   display_name_expression=[],
                   result_format='pandas'):
         """Return the sensor facts for a building.
+
+        API documentation: http://facts.prod.ecorithm.com/api/v1/#/Facts/Facts_get
 
         **Args**:
 
