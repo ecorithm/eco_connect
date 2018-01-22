@@ -19,7 +19,7 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../eco_connect'))
+sys.path.insert(0, os.path.abspath('./eco_repos/eco-connect/eco_connect'))
 
 
 # -- General configuration ------------------------------------------------
@@ -44,7 +44,7 @@ templates_path = ['_templates']
 source_suffix = '.rst'
 
 # The master toctree document.
-master_doc = 'eco-connect-doc'
+master_doc = 'index'
 
 # General information about the project.
 project = 'eco-connect'
@@ -84,7 +84,7 @@ todo_include_todos = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'nature'
+html_theme = 'classic'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
