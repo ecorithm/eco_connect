@@ -16,12 +16,12 @@ class FactsService(BaseRequest):
         **Args**:
 
         **Kwargs**:
-           environment_name (str): "Api environment. Supported environments
+           **environment_name** (str): Api environment. Supported environments
            ('Prod', 'Qa')
 
                 *Example*: 'prod'
 
-           version (str): Api version. Supported versions: ('v1')
+           **version** (str): Api version. Supported versions: ('v1')
 
                 *Example*: 'v1'
     """
@@ -137,10 +137,10 @@ class FactsService(BaseRequest):
 
         *DataFrame Example*::
 
-            index     fact_time       fact_value  eco_point_id  display_name   native_name          point_class         equipment  equipment_type
-            =====  ================   ==========  ============  ============   ===========  ==========================  =========  ==============
-            0      2017-12-20 00:00       1            192       'SpaceTemp'     'name-1'    'SpaceAirTemperature'       'VAV-01'       'VAV'
-            1      2017-12-21 00:00       2            304       'CoolingCoil'   'name-2'    'CoolingCoilUnitFeedback'   'AHU-01'       'AHU'
+            index     fact_time       fact_value  eco_point_id  display_name   native_name          point_class         equipment_name  equipment_type
+            =====  ================   ==========  ============  ============   ===========  ==========================  ==============  ==============
+            0      2017-12-20 00:00       1            192       'SpaceTemp'     'name-1'    'SpaceAirTemperature'         'VAV-01'        'VAV'
+            1      2017-12-21 00:00       2            304       'CoolingCoil'   'name-2'    'CoolingCoilUnitFeedback'     'AHU-01'        'AHU'
 
 
         *Json Example*::
