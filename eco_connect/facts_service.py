@@ -665,7 +665,7 @@ class FactsService(BaseRequest):
                                               **parser)
         return parsed_result
 
-    def get_unamapped_native_names(self, building_id):
+    def get_unmapped_native_names(self, building_id):
         url = self.hostname + f'building/{building_id}/unmapped-native-names'
         result_format = 'json'
         response = self.get(url)
