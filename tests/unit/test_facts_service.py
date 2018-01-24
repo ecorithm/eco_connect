@@ -1410,7 +1410,7 @@ class TestFactsService:
                                                       parser_args={'arg': 1})
         assert result == 'formated-result'
 
-    def test_get_unamapped_native_names(self, mocker, facts_service):
+    def test_get_unmapped_native_names(self, mocker, facts_service):
         expected_url = ('https://facts.prod.ecorithm.com/api/'
                         'v1/building/26/unmapped-native-names')
         mock_get = mocker.patch.object(facts_service, 'get',
@@ -1424,7 +1424,7 @@ class TestFactsService:
                                                     '_format_response',
                                                     return_value=('formated'
                                                                   '-result'))
-        result = facts_service.get_unamapped_native_names(building_id=26)
+        result = facts_service.get_unmapped_native_names(building_id=26)
         mock_get.assert_called_once_with(expected_url)
         mock__get_parser.assert_called_once_with('json')
         mock__format_response.assert_called_once_with('mock-response',

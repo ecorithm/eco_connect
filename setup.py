@@ -8,7 +8,7 @@ def get_requirements():
 
 setup(
     name='eco-connect',
-    version='0.18.4',
+    version='0.18.5',
     description='Ecorithm\'s eco-connect ',
     license="Proprietary",
     python_requires='>=3.6',
