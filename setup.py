@@ -8,12 +8,18 @@ def get_requirements():
 
 setup(
     name='eco-connect',
-    version='0.18.5',
+    version='0.19.0',
     description='Ecorithm\'s eco-connect ',
+    long_description='Please see http://eco-connect.readthedocs.io/en/latest/ '
+    'for Documentation.',
     license="Proprietary",
     python_requires='>=3.6',
-    url='https://github.com/ecorithm/eco-connect',
+    url='https://github.com/ecorithm/eco_connect_public',
     packages=find_packages(exclude=['tests*']),
     include_package_data=True,
-    install_requires=get_requirements()
+    install_requires=get_requirements(),
+    project_urls={
+        "Documentation": "http://eco-connect.readthedocs.io/en/latest/",
+        "Source Code": "https://github.com/ecorithm/eco_connect_public",
+    }
 )
