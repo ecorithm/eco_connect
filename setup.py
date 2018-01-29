@@ -7,7 +7,7 @@ def get_requirements():
 
 
 setup(
-    name='ecp-connect',
+    name='eco-connect',
     version='0.19.0',
     description='Ecorithm\'s private eco-connect ',
     long_description='Please see http://eco-connect.readthedocs.io/en/latest/ '
