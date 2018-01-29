@@ -7,9 +7,9 @@ def get_requirements():
 
 
 setup(
-    name='eco-connect',
+    name='ecp-connect',
     version='0.19.0',
-    description='Ecorithm\'s eco-connect ',
+    description='Ecorithm\'s private eco-connect ',
     long_description='Please see http://eco-connect.readthedocs.io/en/latest/ '
     'for Documentation.',
     license="Proprietary",
@@ -20,6 +20,6 @@ setup(
     install_requires=get_requirements(),
     project_urls={
         "Documentation": "http://eco-connect.readthedocs.io/en/latest/",
-        "Source Code": "https://github.com/ecorithm/eco_connect_public",
+        "Source Code": "https://github.com/ecorithm/eco_connect",
     }
 )
