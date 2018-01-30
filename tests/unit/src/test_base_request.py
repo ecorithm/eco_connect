@@ -1,13 +1,13 @@
 import pytest
 import tempfile
 
-from ecp_connect.src.base_request import BaseRequest
-from ecp_connect.src.errors import InvalidRequest
-from ecp_connect.src.request_parser import RequestParser
+from eco_connect.src.base_request import BaseRequest
+from eco_connect.src.errors import InvalidRequest
+from eco_connect.src.request_parser import RequestParser
 
 
 class TestBaseRequest():
-    MODULE_PATH = 'ecp_connect.src.base_request'
+    MODULE_PATH = 'eco_connect.src.base_request'
     CLASS_PATH = MODULE_PATH + '.BaseRequest'
 
     @pytest.fixture
