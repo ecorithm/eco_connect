@@ -379,7 +379,7 @@ class FactsService(BaseRequest):
             'point_class_expression': point_class_expression,
             'display_name_expression': display_name_expression,
             'native_name_expression': native_name_expression}
-        response = self.get(url, data=data)
+        response = self.post(url, data=data)
         if result_format.lower() == 'pandas':
             parser_args = {'data_key': 'data'}
             fact_avg_parser = self._pandas_fact_parser
@@ -482,15 +482,18 @@ class FactsService(BaseRequest):
         url = self.hostname + f'building/{building_id}/point-mapping'
         data = {
             'is_active': is_active,
-            'eco_point_id': eco_point_ids,
-            'equipment_name': equipment_names,
-            'equipment_type': equipment_types,
-            'point_class': point_classes,
-            'display_name': display_names,
-            'native_name': native_names,
-            'point_class_expression': point_class_expression,
-            'display_name_expression': display_name_expression,
-            'native_name_expression': native_name_expression}
+            'eco_point_id': ','.join(map(str, eco_point_ids)),
+            'equipment_name': ','.join(map(str, equipment_names)),
+            'equipment_type': ','.join(map(str, equipment_types)),
+            'point_class': ','.join(map(str, point_classes)),
+            'display_name': ','.join(map(str, display_names)),
+            'native_name': ','.join(map(str, native_names)),
+            'point_class_expression': ','.join(map(str,
+                                                   point_class_expression)),
+            'display_name_expression': ','.join(map(str,
+                                                    display_name_expression)),
+            'native_name_expression': ','.join(map(str,
+                                                   native_name_expression))}
         response = self.get(url, data=data)
         parser = self._get_parser(result_format, data_key='data')
 
@@ -500,7 +503,7 @@ class FactsService(BaseRequest):
 
     def delete_point_mapping(self, building_id, eco_point_ids=[]):
         url = self.hostname + f'building/{building_id}/point-mapping'
-        payload = {'eco_point_id': eco_point_ids}
+        payload = {'eco_point_id': ','.join(map(str, eco_point_ids))}
         result_format = 'json'
         response = self.delete(url, data=payload, encode_type='form')
         parser = self._get_parser(result_format)
@@ -569,7 +572,7 @@ class FactsService(BaseRequest):
     def delete_equipment(self, building_id, equipments=[]):
         url = self.hostname + f'building/{building_id}/equipment'
         result_format = 'json'
-        payload = {'equipment_name': equipments}
+        payload = {'equipment_name': ','.join(map(str, equipments))}
         response = self.delete(url, data=payload, encode_type='form')
         parser = self._get_parser(result_format)
 
@@ -616,7 +619,7 @@ class FactsService(BaseRequest):
     def delete_native_names(self, building_id, native_names=[]):
         url = self.hostname + f'building/{building_id}/native-names'
         result_format = 'json'
-        payload = {'native_name': native_names}
+        payload = {'native_name': ','.join(map(str, native_names))}
         response = self.delete(url, data=payload, encode_type='form')
         parser = self._get_parser(result_format)
 
