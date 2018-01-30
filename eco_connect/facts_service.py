@@ -39,6 +39,8 @@ class FactsService(BaseRequest):
                   end_hour='23:55',
                   equipment_names=[],
                   equipment_types=[],
+                  excluded_days=[],
+                  excluded_dates=[],
                   point_classes=[],
                   eco_point_ids=[],
                   display_names=[],
@@ -74,6 +76,15 @@ class FactsService(BaseRequest):
            **end_hour** (str): End hour to filter facts for.
 
                 *Example*: '17:00'
+
+           **excluded_days** (list): Specific days to filter data for.
+           Monday=1, Sunday=7
+
+                *Example*: [6, 7]  (Filters Saturday / Sunday)
+
+           **excluded_dates** (list): Specific dates to filter data for.
+
+                *Example*: ['2017-12-20', '2017-12-25']
 
            **equipment_names** (list):  List of equipment names to filter facts
            for.
@@ -275,6 +286,8 @@ class FactsService(BaseRequest):
             'end_date': end_date,
             'start_hour': start_hour,
             'end_hour': end_hour,
+            'excluded_dates': excluded_dates,
+            'excluded_days': excluded_days,
             'eco_point_ids': eco_point_ids,
             'equipment_names': equipment_names,
             'equipment_types': equipment_types,
@@ -354,6 +367,8 @@ class FactsService(BaseRequest):
                       period='day',
                       equipment_names=[],
                       equipment_types=[],
+                      excluded_days=[],
+                      excluded_dates=[],
                       point_classes=[],
                       eco_point_ids=[],
                       display_names=[],
@@ -369,7 +384,9 @@ class FactsService(BaseRequest):
             'end_date': end_date,
             'start_hour': start_hour,
             'end_hour': end_hour,
-            'period': 'day',
+            'excluded_days': excluded_days,
+            'excluded_dates': excluded_dates,
+            'period': period,
             'eco_point_ids': eco_point_ids,
             'equipment_names': equipment_names,
             'equipment_types': equipment_types,
