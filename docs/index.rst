@@ -26,7 +26,7 @@ environment variables. These can be set by running the following commands:
 .. code-block:: shell
 
    export ECO_CONNECT_USER=MY_ECORITHM_USERNAME
-   export ECO_CONNECT_USER=MY_ECORITHM_PASSWORD
+   export ECO_CONNECT_PASSWORD=MY_ECORITHM_PASSWORD
 
 To verify your credentials and that the package has been installed,
 run the following in a python3 interpreter of your choice:
