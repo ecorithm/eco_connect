@@ -1,4 +1,5 @@
 import pytest
+import tempfile
 
 from eco_connect.src.base_request import BaseRequest
 from eco_connect.src.errors import InvalidRequest
@@ -64,7 +65,7 @@ class TestBaseRequest():
                                    data=data,
                                    encode_type='querystring')
         mock_format_kwargs.assert_called_once_with(data=data,
-
+                                                   files={},
                                                    encode_type='querystring')
         mock_request_post.assert_called_once_with(mock_url, arg1=1, arg2=2)
         assert result == 'response'
@@ -91,30 +92,44 @@ class TestBaseRequest():
 
     def test__format_kwargs_querystring(self, mocker, base_request):
         mock_data = {'item1': 1, 'item2': 2}
+        files = {}
         auth = ('username', 'password')
         encode_type = 'querystring'
-        result = base_request._format_kwargs(mock_data, encode_type)
+        result = base_request._format_kwargs(mock_data, encode_type, files)
         assert result == {'auth': auth, 'params': mock_data}
 
     def test__format_kwargs_form(self, mocker, base_request):
         mock_data = {'item1': 1, 'item2': 2}
+        files = {}
         auth = ('username', 'password')
         encode_type = 'form'
-        result = base_request._format_kwargs(mock_data, encode_type)
+        result = base_request._format_kwargs(mock_data, encode_type, files)
         assert result == {'auth': auth, 'data': mock_data}
 
     def test__format_kwargs_json(self, mocker, base_request):
         mock_data = {'item1': 1, 'item2': 2}
+        files = {}
         auth = ('username', 'password')
         encode_type = 'json'
-        result = base_request._format_kwargs(mock_data, encode_type)
+        result = base_request._format_kwargs(mock_data, encode_type, files)
         assert result == {'auth': auth, 'json': mock_data}
+
+    def test__format_kwargs_file(self, mocker, base_request):
+        mock_data = {'item1': 1, 'item2': 2}
+        image = tempfile.NamedTemporaryFile(suffix=".jpg")
+        filerecord = open(image.name, 'rb')
+        files = {'filerecord': filerecord}
+        auth = ('username', 'password')
+        encode_type = 'form'
+        result = base_request._format_kwargs(mock_data, encode_type, files)
+        assert result == {'auth': auth, 'data': mock_data, 'files': files}
 
     def test__format_kwargs_exception(self, mocker, base_request):
         mock_data = {}
+        files = {}
         encode_type = 'invalid'
         with pytest.raises(ValueError):
-            base_request._format_kwargs(mock_data, encode_type)
+            base_request._format_kwargs(mock_data, encode_type, files)
 
     def test__format_response_200(self, mocker, base_request):
         mock_response = mocker.Mock()

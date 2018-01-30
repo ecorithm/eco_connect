@@ -384,15 +384,15 @@ class FactsService(BaseRequest):
         response = self.get(url, data=data)
         if result_format.lower() == 'pandas':
             parser_args = {'data_key': 'data'}
-            fact_avg_parser = self._pandas_fact_avg_parser
+            fact_avg_parser = self._pandas_fact_parser
         elif result_format.lower() == 'json':
             fact_avg_parser = RequestParser.json_parser
             parser_args = {}
         elif result_format.lower() == 'tuple':
-            fact_avg_parser = self._tuple_fact_avg_parser
+            fact_avg_parser = self._tuple_fact_parser
             parser_args = {'data_key': 'data'}
         elif result_format.lower() == 'csv':
-            fact_avg_parser = self._csv_fact_avg_parser
+            fact_avg_parser = self._csv_fact_parser
             parser_args = {'data_key': 'data'}
         else:
             raise ValueError(f'{result_format} is not valid!')
@@ -401,35 +401,6 @@ class FactsService(BaseRequest):
                                               parser=fact_avg_parser,
                                               parser_args=parser_args)
         return parsed_result
-
-    def _tuple_fact_avg_parser(self, response, data_key='data'):
-        try:
-            result = response.json()
-        except (ValueError):
-            raise RequestParserError('Unable to parse the response.',
-                                     response.text)
-
-        result = result[data_key]
-
-        tuple_names = ['aggregate', 'timestamp', 'fact_value']
-
-        response_tuple = namedtuple('response_tuple', tuple_names)
-        parsed_result = []
-        for aggregate, data in result.items():
-            for timestamp, dqi in data.items():
-                row = {'timestamp': timestamp,
-                       'fact_value': dqi,
-                       'aggregate': aggregate}
-                parsed_result.append(response_tuple(**row))
-        return sorted(parsed_result, key=attrgetter('aggregate'))
-
-    def _pandas_fact_avg_parser(self, response, data_key='data'):
-        parsed_tuples = self._tuple_fact_avg_parser(response, data_key)
-        return pd.DataFrame(parsed_tuples)
-
-    def _csv_fact_avg_parser(self, response, data_key='data'):
-        parsed_df = self._pandas_fact_avg_parser(response, data_key)
-        return parsed_df.to_csv(index=None)
 
     def get_buildings(self, building_id=None,
                       is_active=True, result_format='pandas'):
@@ -689,6 +660,18 @@ class FactsService(BaseRequest):
         url = self.hostname + f'building/{building_id}/unstored-native-names'
         result_format = 'json'
         response = self.get(url)
+        parser = self._get_parser(result_format)
+
+        parsed_result = self._format_response(response,
+                                              **parser)
+        return parsed_result
+
+    def get_last_native_name_record(self, building_id, native_name,
+                                    max_time=None):
+        url = self.hostname + f'building/{building_id}/last-native-name-record'
+        result_format = 'json'
+        response = self.get(url, data={'native_name': native_name,
+                                       'max_time': max_time})
         parser = self._get_parser(result_format)
 
         parsed_result = self._format_response(response,

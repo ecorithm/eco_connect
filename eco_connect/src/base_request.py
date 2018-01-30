@@ -1,4 +1,3 @@
-import os
 import requests
 
 from eco_connect.src.errors import InvalidRequest
@@ -13,7 +12,7 @@ class BaseRequest:
 
     def _validate_env(self, environment_name):
         environment_name = environment_name.lower()
-        valid_envs = ['prod', 'qa']
+        valid_envs = ['prod', 'qa', 'dev']
         if environment_name in valid_envs:
             return environment_name
         else:
@@ -33,8 +32,9 @@ class BaseRequest:
                                      encode_type=encode_type)
         return requests.put(url, **kwargs)
 
-    def post(self, url, data={}, encode_type='form'):
+    def post(self, url, data={}, files={}, encode_type='form'):
         kwargs = self._format_kwargs(data=data,
+                                     files=files,
                                      encode_type=encode_type)
         return requests.post(url, **kwargs)
 
@@ -43,15 +43,20 @@ class BaseRequest:
                                      encode_type=encode_type)
         return requests.delete(url, **kwargs)
 
-    def _format_kwargs(self, data, encode_type):
+    def _format_kwargs(self, data, encode_type, files={}):
         if encode_type.lower() == 'querystring':
-            return {'auth': self.credentials, 'params': data}
+            kw_dict = {'auth': self.credentials, 'params': data}
+            return kw_dict
 
         elif encode_type.lower() == 'form':
-            return {'auth': self.credentials, 'data': data}
+            kw_dict = {'auth': self.credentials, 'data': data}
+            if files:
+                kw_dict.update({'files': files})
+            return kw_dict
 
         elif encode_type.lower() == 'json':
-            return {'auth': self.credentials, 'json': data}
+            kw_dict = {'auth': self.credentials, 'json': data}
+            return kw_dict
 
         else:
             raise ValueError(f'({encode_type}) is not valid!')
