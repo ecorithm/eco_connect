@@ -46,6 +46,8 @@ class TestFactsService:
         end_date = '2017-12-10 00:00'
         start_hour = '00:00'
         end_hour = '23:55'
+        excluded_dates = ['2017-12-20']
+        excluded_days = [6]
         equipment_names = ['VAV_01']
         equipment_types = ['VAV']
         point_classes = ['SpaceAirTemperature']
@@ -76,6 +78,8 @@ class TestFactsService:
                                          end_hour,
                                          equipment_names,
                                          equipment_types,
+                                         excluded_days,
+                                         excluded_dates,
                                          point_classes,
                                          eco_point_ids,
                                          display_names,
@@ -94,6 +98,8 @@ class TestFactsService:
                                            'start_hour': start_hour,
                                            'end_hour': end_hour,
                                            'eco_point_ids': eco_point_ids,
+                                           'excluded_days': excluded_days,
+                                           'excluded_dates': excluded_dates,
                                            'equipment_names': equipment_names,
                                            'equipment_types': equipment_types,
                                            'point_classes': point_classes,
@@ -112,6 +118,8 @@ class TestFactsService:
         end_date = '2017-12-10 00:00'
         start_hour = '00:00'
         end_hour = '23:55'
+        excluded_dates = ['2017-12-20']
+        excluded_days = [6]
         equipment_names = ['VAV_01']
         equipment_types = ['VAV']
         point_classes = ['SpaceAirTemperature']
@@ -142,6 +150,8 @@ class TestFactsService:
                                          end_hour,
                                          equipment_names,
                                          equipment_types,
+                                         excluded_days,
+                                         excluded_dates,
                                          point_classes,
                                          eco_point_ids,
                                          display_names,
@@ -161,6 +171,8 @@ class TestFactsService:
                                            'start_hour': start_hour,
                                            'end_hour': end_hour,
                                            'eco_point_ids': eco_point_ids,
+                                           'excluded_days': excluded_days,
+                                           'excluded_dates': excluded_dates,
                                            'equipment_names': equipment_names,
                                            'equipment_types': equipment_types,
                                            'point_classes': point_classes,
@@ -179,6 +191,8 @@ class TestFactsService:
         end_date = '2017-12-10 00:00'
         start_hour = '00:00'
         end_hour = '23:55'
+        excluded_dates = ['2017-12-20']
+        excluded_days = [6]
         equipment_names = ['VAV_01']
         equipment_types = ['VAV']
         point_classes = ['SpaceAirTemperature']
@@ -209,6 +223,8 @@ class TestFactsService:
                                          end_hour,
                                          equipment_names,
                                          equipment_types,
+                                         excluded_days,
+                                         excluded_dates,
                                          point_classes,
                                          eco_point_ids,
                                          display_names,
@@ -228,6 +244,8 @@ class TestFactsService:
                                            'start_hour': start_hour,
                                            'end_hour': end_hour,
                                            'eco_point_ids': eco_point_ids,
+                                           'excluded_days': excluded_days,
+                                           'excluded_dates': excluded_dates,
                                            'equipment_names': equipment_names,
                                            'equipment_types': equipment_types,
                                            'point_classes': point_classes,
@@ -246,6 +264,8 @@ class TestFactsService:
         end_date = '2017-12-10 00:00'
         start_hour = '00:00'
         end_hour = '23:55'
+        excluded_dates = ['2017-12-20']
+        excluded_days = [6]
         equipment_names = ['VAV_01']
         equipment_types = ['VAV']
         point_classes = ['SpaceAirTemperature']
@@ -276,6 +296,8 @@ class TestFactsService:
                                          end_hour,
                                          equipment_names,
                                          equipment_types,
+                                         excluded_days,
+                                         excluded_dates,
                                          point_classes,
                                          eco_point_ids,
                                          display_names,
@@ -295,6 +317,8 @@ class TestFactsService:
                                            'start_hour': start_hour,
                                            'end_hour': end_hour,
                                            'eco_point_ids': eco_point_ids,
+                                           'excluded_days': excluded_days,
+                                           'excluded_dates': excluded_dates,
                                            'equipment_names': equipment_names,
                                            'equipment_types': equipment_types,
                                            'point_classes': point_classes,
@@ -568,7 +592,9 @@ class TestFactsService:
             'end_date': '2017-12-21 00:00',
             'start_hour': '00:00',
             'end_hour': '23:55',
-            'period': 'day',
+            'period': 'minute',
+            'excluded_days': [7],
+            'excluded_dates': ['2017-12-20'],
             'eco_point_ids': [1, 2, 3],
             'equipment_names': ['VAV-01'],
             'equipment_types': ['VAV'],
@@ -607,6 +633,8 @@ class TestFactsService:
             'end_hour': '23:55',
             'period': 'day',
             'eco_point_ids': [1, 2, 3],
+            'excluded_dates': ['2017-12-20'],
+            'excluded_days': [7],
             'equipment_names': ['VAV-01'],
             'equipment_types': ['VAV'],
             'point_classes': ['SpaceAirTemperature'],
@@ -646,6 +674,8 @@ class TestFactsService:
             'eco_point_ids': [1, 2, 3],
             'equipment_names': ['VAV-01'],
             'equipment_types': ['VAV'],
+            'excluded_dates': ['2017-12-20'],
+            'excluded_days': [7],
             'point_classes': ['SpaceAirTemperature'],
             'display_names': ['SpaceTemp'],
             'native_names': ['native-name-1'],
@@ -683,6 +713,8 @@ class TestFactsService:
             'eco_point_ids': [1, 2, 3],
             'equipment_names': ['VAV-01'],
             'equipment_types': ['VAV'],
+            'excluded_dates': ['2017-12-20'],
+            'excluded_days': [7],
             'point_classes': ['SpaceAirTemperature'],
             'display_names': ['SpaceTemp'],
             'native_names': ['native-name-1'],
