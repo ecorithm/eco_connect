@@ -28,7 +28,10 @@ class FactsService(BaseRequest):
 
     def __init__(self, environment_name='prod', version='v1'):
         self.env = self._validate_env(environment_name=environment_name)
-        self.hostname = f'https://facts.{self.env}.ecorithm.com/api/{version}/'
+        if environment_name == 'dev':
+            self.hostname = 'http://127.0.0.1:5000/api/v1/'
+        else:
+            self.hostname = f'https://facts.{self.env}.ecorithm.com/api/{version}/'
         super().__init__()
 
     def get_facts(self,
@@ -349,7 +352,52 @@ class FactsService(BaseRequest):
         return result_df.to_csv()
 
     def put_facts(self, building_id, data=pd.DataFrame()):
-        """Upload a dataframe of facts for a building id."""
+        """Insert facts for a building.
+
+        API documentation: http://facts.prod.ecorithm.com/api/v1/#/Facts/put
+
+        **Args**:
+
+           **building_id** (str):  Building id to get facts for.
+
+                *Example*: 1
+
+           **data** (DataFrame): DataFrame with data to upload.
+
+                *Example*::
+
+                    index     fact_time       fact_value   native-name
+                    =====  ================   ==========  =============
+                    0      2017-12-20 00:00       1       native-name-1
+                    1      2017-12-21 00:00       2       native-name-2
+
+
+        .. note::
+           If errors are present, a `message` key
+           will be returned.
+
+           *Example*:
+            {
+            'message': {'field_errors': ['native-name-1']}
+            }
+
+
+    **Example Usage:**
+
+    >>> from eco_connect import FactsService
+    >>> import pandas as pd
+    >>> facts_service = FactsService()
+    >>> data = pd.DataFrame(data=[['2017-12-20 00:00', 1, 'native-name-1'],
+                                  ['2017-12-21 00:00', 2, 'native-name-2']],
+                            columns=['fact_time', 'fact_value', 'native_name'])
+    >>> fs.put_facts(building_id=26, data=data)
+        {'data': {'building_id': 26,
+                  'max_process_timestamp': '2017-12-21 00:00',
+                  'min_process_timestamp': '2017-12-21 00:00',
+                  'records_stored': 1},
+         'message': {'field_errors': ['native-name-1']}}
+"""
+
         url = self.hostname + f'building/{building_id}/facts'
         input_data = list(data.T.to_dict().values())
         response = self.put(url, data=input_data, encode_type='json')
@@ -377,7 +425,244 @@ class FactsService(BaseRequest):
                       native_name_expression=[],
                       display_name_expression=[],
                       result_format='pandas'):
-        """Return facts using the specified aggregate."""
+        """Return the average sensor facts for a building.
+
+        API documentation: http://facts.prod.ecorithm.com/api/v1/#/Facts/get_avg
+
+        **Args**:
+
+           **building_id** (str):  Building id to get facts for.
+
+                *Example*: 1
+
+           **start_date** (str):  Start date to return facts for.
+
+                *Example*: '2017-12-20 00:00'
+
+           **end_date** (str):  End date to return facts for.
+
+                *Example*: '2017-12-21 23:55'
+
+        **Kwargs**:
+
+           **start_hour** (str): Start hour to filter facts for.
+
+                *Example*: '08:00'
+
+           **end_hour** (str): End hour to filter facts for.
+
+                *Example*: '17:00'
+
+           **excluded_days** (list): Specific days to filter data for.
+           Monday=1, Sunday=7
+
+                *Example*: [6, 7]  (Filters Saturday / Sunday)
+
+           **excluded_dates** (list): Specific dates to filter data for.
+
+                *Example*: ['2017-12-20', '2017-12-25']
+
+           **equipment_names** (list):  List of equipment names to filter facts
+           for.
+
+                *Example*: ['VAV_01', 'VAV_02']
+
+           **equipment_types** (list):  List of equipment types to filter facts
+           for.
+
+                *Example*: ['VAV', 'AHU']
+
+           **point_classes** (list):  List of point_classes to filter facts
+           for.
+
+                *Example*: ['SpaceAirTemperature', 'CoolingCoilUnitFeedback']
+
+           **eco_point_ids** (list):  List of eco_point_ids to filter facts
+           for.
+
+                *Example*: [1, 2, 3]
+
+           **display_names** (list):  List of display_names to filter facts
+           for.
+
+                *Example*: ['SpaceTemp', 'AirFlow']
+
+           **native_names** (list):  List of native_names to filter facts
+           for.
+
+                *Example*: ['name-1', 'name-2']
+
+           **point_class_expression** (list):  List of equipment / equipment type +
+           point class regex expressions to filter facts. Equipment / equipment
+           type and point class regex expressions are space delimited.
+           for.
+
+                *Example*: ['VAV.* SpaceAirTemperature', 'AHU Space.*']
+
+           **native_name_expression** (list):  List of native-name regex
+           expressions to filter facts.
+
+                *Example*: ['nam.*', 'nati-.*']
+
+           **display_name_expression** (list): List of equipment / equipment type +
+           display name regex expressions to filter facts. Equipment /
+           equipment type and point class regex expressions are space
+           delimited.
+
+                *Example*: ['VAV.* SpaceAirTemperature', 'AHU Space.*']
+
+           **period** (string): Aggregate period to average on. Supports the
+           following aggregates [minute, hour, day, week, month, year]
+
+                *Example*: 'hour'
+
+                *Default*: 'day'
+
+           **result_format** (str): Output format type. (Pandas, tuple, csv,
+           json)
+
+                *Example*: 'pandas'
+
+
+
+        **Returns**:
+           (DataFrame or list or csv or json depending on the requested
+           result format).
+
+        *DataFrame Example*::
+
+            index     fact_time       fact_value  eco_point_id  display_name   native_name          point_class         equipment_name  equipment_type
+            =====  ================   ==========  ============  ============   ===========  ==========================  ==============  ==============
+            0      2017-12-20 00:00       1            192       'SpaceTemp'     'name-1'    'SpaceAirTemperature'         'VAV-01'        'VAV'
+            1      2017-12-21 00:00       2            304       'CoolingCoil'   'name-2'    'CoolingCoilUnitFeedback'     'AHU-01'        'AHU'
+
+
+        *Json Example*::
+
+            {
+              "data": [
+                {
+                  "87238": {
+                    "data": {
+                      "2017-08-01 00:00": 67.5,
+                      "2017-08-01 00:05": 68.5
+                    },
+                    "meta": {
+                      "display_name": "SpaceTemp",
+                      "eco_point_id": 85743,
+                      "native_name": "UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.ZN-T",
+                      "equipment": "VAV-301",
+                      "equipment_type": "VAV",
+                      "point_class": "SpaceAirTemperature"
+                    }
+                  },
+                  "87239": {
+                    "data": {
+                      "2017-08-01 00:00": 0,
+                      "2017-08-01 00:05": 100
+                    },
+                    "meta": {
+                      "display_name": "Cooling",
+                      "eco_point_id": 87239,
+                      "native_name": "UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.CV",
+                      "equipment": "VAV_301",
+                      "equipment_type": "VAV",
+                      "point_class": "CoolingCoilUnitFeedback"
+                    }
+                  }
+                }
+              ]
+            }
+
+
+        *Csv Example*::
+
+                ',fact_time,fact_value,point_class,display_name,native_name,
+                equipment_type,equipment_name,eco_point_id
+
+
+                0,2017-12-20 00:05,70.1923,SpaceAirTemperature,SpaceTemp,
+                UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.ZN-T,VAV,VAV_301,85743,
+
+
+                2017-12-20 00:05,76.08,SpaceAirTemperatureSetPointWhenCooling,
+                SpaceTempSetPoint_ActualCooling,
+                UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.ACLG-SET,VAV,VAV_301,
+                85744,
+
+                2017-12-20 00:05,70.08,
+                SpaceAirTemperatureSetPointWhenHeating,
+                SpaceTempSetPoint_ActualHeating,
+                UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.AHTG-SET,VAV,VAV_301,85745'
+
+
+        *Tuple Example*::
+
+            [response_tuple(fact_time='2017-12-20 00:05', fact_value=70.1923,
+                            point_class='SpaceAirTemperature', display_name='SpaceTemp',
+                            native_name='UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.ZN-T',
+                            equipment_type='VAV', equipment_name='VAV_301', eco_point_id=85743),
+             response_tuple(fact_time='2017-12-20 00:05', fact_value=76.08,
+                            point_class='SpaceAirTemperatureSetPointWhenCooling',
+                            display_name='SpaceTempSetPoint_ActualCooling',
+                            native_name='UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.ACLG-SET',
+                            equipment_type='VAV', equipment_name='VAV_301', eco_point_id=85744)]
+
+        .. note::
+           And invalid api request will return back the raw api response.
+
+           *Example*:
+            {"message": {"NoData": "No data found for the provided filters.
+            This building has data from '2017-12-20 00:00'
+            to '2017-12-21 00:00'"}}
+
+
+    **Example Usage:**
+
+    >>> from eco_connect import FactsService
+    >>> facts_service = FactsService()
+    >>> facts_service.get_avg_facts(building_id=26,
+                                    start_date='2017-12-20 00:00',
+                                    end_date='2017-12-21 00:00',
+                                    period='minute',
+                                    result_format='json')
+        {
+          "data": [
+            {
+              "87238": {
+                "data": {
+                  "2017-08-01 00:00": 67.5,
+                  "2017-08-01 00:05": 68.5
+                },
+                "meta": {
+                  "display_name": "SpaceTemp",
+                  "eco_point_id": 85743,
+                  "native_name": "UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.ZN-T",
+                  "equipment": "VAV-301",
+                  "equipment_type": "VAV",
+                  "point_class": "SpaceAirTemperature"
+                }
+              },
+              "87239": {
+                "data": {
+                  "2017-08-01 00:00": 0,
+                  "2017-08-01 00:05": 100
+                },
+                "meta": {
+                  "display_name": "Cooling",
+                  "eco_point_id": 87239,
+                  "native_name": "UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.CV",
+                  "equipment": "VAV_301",
+                  "equipment_type": "VAV",
+                  "point_class": "CoolingCoilUnitFeedback"
+                }
+              }
+            }
+          ]
+        }
+
+        """
+
         url = self.hostname + f'building/{building_id}/avg-facts'
         data = {
             'start_date': start_date,

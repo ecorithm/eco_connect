@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>get_facts &#8212; eco-connect  documentation</title>
+    <title>get_avg_facts &#8212; eco-connect  documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -23,8 +23,8 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="get_avg_facts" href="facts_service.get_avg_facts.html" />
-    <link rel="prev" title="Facts-Service" href="eco_connect.facts_service.html" /> 
+    <link rel="next" title="put_facts" href="facts_service.put_facts.html" />
+    <link rel="prev" title="get_facts" href="facts_service.get_facts.html" /> 
   </head>
   <body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -34,10 +34,10 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="facts_service.get_avg_facts.html" title="get_avg_facts"
+          <a href="facts_service.put_facts.html" title="put_facts"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="eco_connect.facts_service.html" title="Facts-Service"
+          <a href="facts_service.get_facts.html" title="get_facts"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">eco-connect  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="eco_connect.facts_service.html" accesskey="U">Facts-Service</a> &#187;</li> 
@@ -49,14 +49,14 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="get-facts">
-<h1>get_facts<a class="headerlink" href="#get-facts" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="get-avg-facts">
+<h1>get_avg_facts<a class="headerlink" href="#get-avg-facts" title="Permalink to this headline">¶</a></h1>
 <dl class="method">
-<dt id="eco_connect.FactsService.get_facts">
-<code class="descclassname">FactsService.</code><code class="descname">get_facts</code><span class="sig-paren">(</span><em>building_id</em>, <em>start_date</em>, <em>end_date</em>, <em>start_hour='00:00'</em>, <em>end_hour='23:55'</em>, <em>equipment_names=[]</em>, <em>equipment_types=[]</em>, <em>excluded_days=[]</em>, <em>excluded_dates=[]</em>, <em>point_classes=[]</em>, <em>eco_point_ids=[]</em>, <em>display_names=[]</em>, <em>native_names=[]</em>, <em>point_class_expression=[]</em>, <em>native_name_expression=[]</em>, <em>display_name_expression=[]</em>, <em>result_format='pandas'</em><span class="sig-paren">)</span><a class="headerlink" href="#eco_connect.FactsService.get_facts" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the sensor facts for a building.</p>
+<dt id="eco_connect.FactsService.get_avg_facts">
+<code class="descclassname">FactsService.</code><code class="descname">get_avg_facts</code><span class="sig-paren">(</span><em>building_id</em>, <em>start_date</em>, <em>end_date</em>, <em>start_hour='00:00'</em>, <em>end_hour='23:55'</em>, <em>period='day'</em>, <em>equipment_names=[]</em>, <em>equipment_types=[]</em>, <em>excluded_days=[]</em>, <em>excluded_dates=[]</em>, <em>point_classes=[]</em>, <em>eco_point_ids=[]</em>, <em>display_names=[]</em>, <em>native_names=[]</em>, <em>point_class_expression=[]</em>, <em>native_name_expression=[]</em>, <em>display_name_expression=[]</em>, <em>result_format='pandas'</em><span class="sig-paren">)</span><a class="headerlink" href="#eco_connect.FactsService.get_avg_facts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the average sensor facts for a building.</p>
 <blockquote>
-<div><p>API documentation: <a class="reference external" href="http://facts.prod.ecorithm.com/api/v1/#/Facts/Facts_get">http://facts.prod.ecorithm.com/api/v1/#/Facts/Facts_get</a></p>
+<div><p>API documentation: <a class="reference external" href="http://facts.prod.ecorithm.com/api/v1/#/Facts/get_avg">http://facts.prod.ecorithm.com/api/v1/#/Facts/get_avg</a></p>
 <p><strong>Args</strong>:</p>
 <blockquote>
 <div><p><strong>building_id</strong> (str):  Building id to get facts for.</p>
@@ -124,6 +124,12 @@ equipment type and point class regex expressions are space
 delimited.</p>
 <blockquote>
 <div><em>Example</em>: [‘VAV.* SpaceAirTemperature’, ‘AHU Space.*’]</div></blockquote>
+<p><strong>period</strong> (string): Aggregate period to average on. Supports the
+following aggregates [minute, hour, day, week, month, year]</p>
+<blockquote>
+<div><p><em>Example</em>: ‘hour’</p>
+<p><em>Default</em>: ‘day’</p>
+</div></blockquote>
 <p><strong>result_format</strong> (str): Output format type. (Pandas, tuple, csv,
 json)</p>
 <blockquote>
@@ -224,10 +230,11 @@ to ‘2017-12-21 00:00’”}}</dd>
 <p><strong>Example Usage:</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">eco_connect</span> <span class="k">import</span> <span class="n">FactsService</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">facts_service</span> <span class="o">=</span> <span class="n">FactsService</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">facts_service</span><span class="o">.</span><span class="n">get_facts</span><span class="p">(</span><span class="n">building_id</span><span class="o">=</span><span class="mi">26</span><span class="p">,</span>
-<span class="go">                            start_date=&#39;2017-12-20 00:00&#39;,</span>
-<span class="go">                            end_date=&#39;2017-12-21 00:00&#39;,</span>
-<span class="go">                            result_format=&#39;json&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">facts_service</span><span class="o">.</span><span class="n">get_avg_facts</span><span class="p">(</span><span class="n">building_id</span><span class="o">=</span><span class="mi">26</span><span class="p">,</span>
+<span class="go">                                start_date=&#39;2017-12-20 00:00&#39;,</span>
+<span class="go">                                end_date=&#39;2017-12-21 00:00&#39;,</span>
+<span class="go">                                period=&#39;minute&#39;,</span>
+<span class="go">                                result_format=&#39;json&#39;)</span>
 <span class="go">    {</span>
 <span class="go">      &quot;data&quot;: [</span>
 <span class="go">        {</span>
@@ -275,11 +282,11 @@ to ‘2017-12-21 00:00’”}}</dd>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="eco_connect.facts_service.html"
-                        title="previous chapter">Facts-Service</a></p>
+  <p class="topless"><a href="facts_service.get_facts.html"
+                        title="previous chapter">get_facts</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="facts_service.get_avg_facts.html"
-                        title="next chapter">get_avg_facts</a></p>
+  <p class="topless"><a href="facts_service.put_facts.html"
+                        title="next chapter">put_facts</a></p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
@@ -301,10 +308,10 @@ to ‘2017-12-21 00:00’”}}</dd>
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="facts_service.get_avg_facts.html" title="get_avg_facts"
+          <a href="facts_service.put_facts.html" title="put_facts"
              >next</a> |</li>
         <li class="right" >
-          <a href="eco_connect.facts_service.html" title="Facts-Service"
+          <a href="facts_service.get_facts.html" title="get_facts"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">eco-connect  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="eco_connect.facts_service.html" >Facts-Service</a> &#187;</li> 
