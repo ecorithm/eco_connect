@@ -8,7 +8,7 @@ def get_requirements():
 
 setup(
     name='eco-connect',
-    version='0.20.0',
+    version='0.20.1',
     description='Ecorithm\'s private eco-connect ',
     long_description='Please see http://eco-connect.readthedocs.io/en/latest/ '
     'for Documentation.',
