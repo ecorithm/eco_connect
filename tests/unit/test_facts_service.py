@@ -556,7 +556,7 @@ class TestFactsService:
         mock_response = mocker.Mock()
         mock_json_parser = mocker.patch(self.MODULE_PATH +
                                         '.RequestParser.json_parser')
-        mock_get = mocker.patch.object(facts_service, 'get')
+        mock_get = mocker.patch.object(facts_service, 'post')
         mock_get.return_value = mock_response
         mock_format_response = mocker.patch.object(facts_service,
                                                    '_format_response')
@@ -593,7 +593,7 @@ class TestFactsService:
         mock_response = mocker.Mock()
         mock_pandas_parser = mocker.patch.object(facts_service,
                                                  '_pandas_fact_parser')
-        mock_get = mocker.patch.object(facts_service, 'get')
+        mock_get = mocker.patch.object(facts_service, 'post')
         mock_get.return_value = mock_response
         mock_format_response = mocker.patch.object(facts_service,
                                                    '_format_response')
@@ -630,7 +630,7 @@ class TestFactsService:
         mock_response = mocker.Mock()
         mock_pandas_parser = mocker.patch.object(facts_service,
                                                  '_tuple_fact_parser')
-        mock_get = mocker.patch.object(facts_service, 'get')
+        mock_get = mocker.patch.object(facts_service, 'post')
         mock_get.return_value = mock_response
         mock_format_response = mocker.patch.object(facts_service,
                                                    '_format_response')
@@ -667,7 +667,7 @@ class TestFactsService:
         mock_response = mocker.Mock()
         mock_pandas_parser = mocker.patch.object(facts_service,
                                                  '_csv_fact_parser')
-        mock_get = mocker.patch.object(facts_service, 'get')
+        mock_get = mocker.patch.object(facts_service, 'post')
         mock_get.return_value = mock_response
         mock_format_response = mocker.patch.object(facts_service,
                                                    '_format_response')
@@ -922,15 +922,15 @@ class TestFactsService:
                                        return_value='mock-response')
         data = {
             'is_active': is_active,
-            'eco_point_id': eco_point_ids,
-            'equipment_name': equipment_names,
-            'equipment_type': equipment_types,
-            'point_class': point_classes,
-            'display_name': display_names,
-            'native_name': native_names,
-            'point_class_expression': point_class_expression,
-            'display_name_expression': display_name_expression,
-            'native_name_expression': native_name_expression}
+            'eco_point_id': '1,2,3',
+            'equipment_name': 'VAV_01',
+            'equipment_type': 'VAV',
+            'point_class': 'SpaceAirTemperature',
+            'display_name': 'SpaceTemp',
+            'native_name': 'native-name-1',
+            'point_class_expression': 'VAV.* .*',
+            'display_name_expression': 'AHU.* .*',
+            'native_name_expression': 'VAV.*'}
         mock__get_parser = mocker.patch.object(facts_service, '_get_parser',
                                                return_value={'parser':
                                                              'mock-parser',
@@ -974,7 +974,7 @@ class TestFactsService:
                                                     '_format_response',
                                                     return_value=('formated'
                                                                   '-result'))
-        mock_payload = {'eco_point_id': [1, 2, 3]}
+        mock_payload = {'eco_point_id': '1,2,3'}
         result = facts_service.delete_point_mapping(building_id=26,
                                                     eco_point_ids=[1, 2, 3])
         mock_get.assert_called_once_with(expected_url, data=mock_payload,
@@ -1164,7 +1164,7 @@ class TestFactsService:
                                                     '_format_response',
                                                     return_value=('formated'
                                                                   '-result'))
-        mock_payload = {'equipment_name': ['name-1', 'name-2']}
+        mock_payload = {'equipment_name': 'name-1,name-2'}
         result = facts_service.delete_equipment(building_id=26,
                                                 equipments=['name-1',
                                                             'name-2'])
@@ -1310,7 +1310,7 @@ class TestFactsService:
                                                     '_format_response',
                                                     return_value=('formated'
                                                                   '-result'))
-        mock_payload = {'native_name': ['name-1', 'name-2']}
+        mock_payload = {'native_name': 'name-1,name-2'}
         result = facts_service.delete_native_names(building_id=26,
                                                    native_names=['name-1',
                                                                  'name-2'])
