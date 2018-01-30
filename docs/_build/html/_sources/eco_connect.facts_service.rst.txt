@@ -26,6 +26,7 @@ FactsService
 
 .. toctree::
    facts_service.get_facts
+   facts_service.get_avg_facts
    facts_service.put_facts
    facts_service.get_point_mapping
    facts_service.get_native_names
