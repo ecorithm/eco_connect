@@ -65,13 +65,14 @@ including Pandas, will require a compiler to compile required bits of code,
 and can take a few minutes to complete.</p>
 <p>All supported connectors require authentication via your provided
 ecorithm username and password. These credentials are set through
-environment variables. These can be set by running the following commands:</p>
-<div class="highlight-shell"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">ECO_CONNECT_USER</span><span class="o">=</span>MY_ECORITHM_USERNAME
-<span class="nb">export</span> <span class="nv">ECO_CONNECT_PASSWORD</span><span class="o">=</span>MY_ECORITHM_PASSWORD
+environment variables and can be set by running the following commands
+in shell:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">ECO_CONNECT_USER</span><span class="o">=</span><span class="s2">&quot;MY_ECORITHM_USERNAME&quot;</span>
+<span class="nb">export</span> <span class="nv">ECO_CONNECT_PASSWORD</span><span class="o">=</span><span class="s2">&quot;MY_ECORITHM_PASSWORD&quot;</span>
 </pre></div>
 </div>
-<p>To verify your credentials and that the package has been installed,
-run the following in a python3 interpreter of your choice:</p>
+<p>To verify your credentials and that the package has been installed correctly,
+run the following in a pythoninterpreter of your choice:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">eco_connect</span> <span class="kn">import</span> <span class="n">validate_credentials</span>
 
 <span class="n">validate_credentials</span><span class="p">()</span>
@@ -97,7 +98,7 @@ For example, to import the FactsService connector:</p>
 <li class="toctree-l2"><a class="reference internal" href="eco_connect.facts_service.html#factsservice">FactsService</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="facts_service.get_facts.html">get_facts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="facts_service.get_avg_facts.html">get_avg_facts</a></li>
-<li class="toctree-l3"><a class="reference internal" href="facts_service.put_facts.html">put_factss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="facts_service.put_facts.html">put_facts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="facts_service.get_point_mapping.html">get_point_mapping</a></li>
 <li class="toctree-l3"><a class="reference internal" href="facts_service.get_native_names.html">get_native_names</a></li>
 <li class="toctree-l3"><a class="reference internal" href="facts_service.get_equipment.html">get_equipment</a></li>
