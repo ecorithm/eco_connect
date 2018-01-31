@@ -513,11 +513,11 @@ class FactsService(BaseRequest):
                 *Example*: ['VAV.* SpaceAirTemperature', 'AHU Space.*']
 
            **period** (string): Aggregate period to average on. Supports the
-           following aggregates [minute, hour, day, week, month, year]
+           following aggregates [duration, minute, hour, day, week, month, year]
 
                 *Example*: 'hour'
 
-                *Default*: 'day'
+                *Default*: 'duration'
 
            **result_format** (str): Output format type. (Pandas, tuple, csv,
            json)
