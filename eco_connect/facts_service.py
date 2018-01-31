@@ -31,8 +31,8 @@ class FactsService(BaseRequest):
         if environment_name == 'dev':
             self.hostname = 'http://127.0.0.1:5000/api/v1/'
         else:
-            self.hostname = f'https://facts.{self.env}.'
-            'ecorithm.com/api/{version}/'
+            self.hostname = (f'https://facts.{self.env}.'
+                             f'ecorithm.com/api/{version}/')
         super().__init__()
 
     def get_facts(self,
