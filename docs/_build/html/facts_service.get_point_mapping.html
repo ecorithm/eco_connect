@@ -54,7 +54,171 @@
 <dl class="method">
 <dt id="eco_connect.FactsService.get_point_mapping">
 <code class="descclassname">FactsService.</code><code class="descname">get_point_mapping</code><span class="sig-paren">(</span><em>building_id</em>, <em>equipment_names=[]</em>, <em>equipment_types=[]</em>, <em>point_classes=[]</em>, <em>eco_point_ids=[]</em>, <em>display_names=[]</em>, <em>native_names=[]</em>, <em>point_class_expression=[]</em>, <em>native_name_expression=[]</em>, <em>display_name_expression=[]</em>, <em>is_active=True</em>, <em>result_format='pandas'</em><span class="sig-paren">)</span><a class="headerlink" href="#eco_connect.FactsService.get_point_mapping" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the point mapping for a building id.</p>
+<dd><p>Return the point mapping for a building.</p>
+<blockquote>
+<div><p>API documentation:
+<a class="reference external" href="http://facts.prod.ecorithm.com/api/v1/#/Point-Mapping/point_mapping_get">http://facts.prod.ecorithm.com/api/v1/#/Point-Mapping/point_mapping_get</a></p>
+<p><strong>Args</strong>:</p>
+<blockquote>
+<div><p><strong>building_id</strong> (str):  Building id to get facts for.</p>
+<blockquote>
+<div><em>Example</em>: 1</div></blockquote>
+</div></blockquote>
+<p><strong>Kwargs</strong>:</p>
+<blockquote>
+<div><p><strong>equipment_names</strong> (list):  List of equipment names to filter facts
+for.</p>
+<blockquote>
+<div><em>Example</em>: [‘VAV_01’, ‘VAV_02’]</div></blockquote>
+<p><strong>equipment_types</strong> (list):  List of equipment types to filter facts
+for.</p>
+<blockquote>
+<div><em>Example</em>: [‘VAV’, ‘AHU’]</div></blockquote>
+<p><strong>point_classes</strong> (list):  List of point_classes to filter facts
+for.</p>
+<blockquote>
+<div><em>Example</em>: [‘SpaceAirTemperature’, ‘CoolingCoilUnitFeedback’]</div></blockquote>
+<p><strong>eco_point_ids</strong> (list):  List of eco_point_ids to filter facts
+for.</p>
+<blockquote>
+<div><em>Example</em>: [1, 2, 3]</div></blockquote>
+<p><strong>display_names</strong> (list):  List of display_names to filter facts
+for.</p>
+<blockquote>
+<div><em>Example</em>: [‘SpaceTemp’, ‘AirFlow’]</div></blockquote>
+<p><strong>native_names</strong> (list):  List of native_names to filter facts
+for.</p>
+<blockquote>
+<div><em>Example</em>: [‘name-1’, ‘name-2’]</div></blockquote>
+<p><strong>point_class_expression</strong> (list):  List of equipment / equipment type +
+point class regex expressions to filter facts. Equipment / equipment
+type and point class regex expressions are space delimited.
+for.</p>
+<blockquote>
+<div><em>Example</em>: [‘VAV.* SpaceAirTemperature’, ‘AHU Space.*’]</div></blockquote>
+<p><strong>native_name_expression</strong> (list):  List of native-name regex
+expressions to filter facts.</p>
+<blockquote>
+<div><em>Example</em>: [‘nam.*’, ‘nati-.*’]</div></blockquote>
+<p><strong>display_name_expression</strong> (list): List of equipment / equipment type +
+display name regex expressions to filter facts. Equipment /
+equipment type and point class regex expressions are space
+delimited.</p>
+<blockquote>
+<div><em>Example</em>: [‘VAV.* SpaceAirTemperature’, ‘AHU Space.*’]</div></blockquote>
+<p><strong>result_format</strong> (str): Output format type. (Pandas, tuple, csv,
+json)</p>
+<blockquote>
+<div><em>Example</em>: ‘pandas’</div></blockquote>
+</div></blockquote>
+<dl class="docutils">
+<dt><strong>Returns</strong>:</dt>
+<dd>(DataFrame or list or csv or json depending on the requested
+result format).</dd>
+</dl>
+<p><em>DataFrame Example</em>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">index</span>    <span class="n">eco_point_id</span>     <span class="n">display_name</span>   <span class="n">native_name</span>        <span class="n">point_class</span>           <span class="n">equipment_name</span>   <span class="n">equipment_type</span>
+<span class="o">=====</span>  <span class="o">================</span>   <span class="o">============</span>  <span class="o">============</span>  <span class="o">=========================</span>   <span class="o">==============</span>  <span class="o">================</span>
+<span class="mi">0</span>            <span class="mi">192</span>          <span class="s1">&#39;SpaceTemp&#39;</span>     <span class="s1">&#39;name-1&#39;</span>    <span class="s1">&#39;SpaceAirTemperature&#39;</span>         <span class="s1">&#39;VAV-01&#39;</span>        <span class="s1">&#39;VAV&#39;</span>
+<span class="mi">1</span>            <span class="mi">304</span>          <span class="s1">&#39;CoolingCoil&#39;</span>   <span class="s1">&#39;name-2&#39;</span>    <span class="s1">&#39;CoolingCoilUnitFeedback&#39;</span>     <span class="s1">&#39;AHU-01&#39;</span>        <span class="s1">&#39;AHU&#39;</span>
+</pre></div>
+</div>
+<p><em>Json Example</em>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;equipment_name&quot;</span><span class="p">:</span> <span class="s2">&quot;VAV_01&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;equipment_type&quot;</span><span class="p">:</span> <span class="s2">&quot;VAV&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;native_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Native-Name-1&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;eco_point_id&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+      <span class="s2">&quot;point_class&quot;</span><span class="p">:</span> <span class="s2">&quot;SpaceAirTemperature&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;native_name_id&quot;</span><span class="p">:</span> <span class="mi">1283</span><span class="p">,</span>
+      <span class="s2">&quot;display_name&quot;</span><span class="p">:</span> <span class="s2">&quot;SpaceTemp&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;last_updated&quot;</span><span class="p">:</span> <span class="s2">&quot;2017-11-17T17:44:04Z&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;equipment_name&quot;</span><span class="p">:</span> <span class="s2">&quot;VAV_02&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;equipment_type&quot;</span><span class="p">:</span> <span class="s2">&quot;VAV&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;native_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Native-Name-1&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;eco_point_id&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+      <span class="s2">&quot;point_class&quot;</span><span class="p">:</span> <span class="s2">&quot;SpaceAirTemperature&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;native_name_id&quot;</span><span class="p">:</span> <span class="mi">1283</span><span class="p">,</span>
+      <span class="s2">&quot;display_name&quot;</span><span class="p">:</span> <span class="s2">&quot;SpaceTemp&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;last_updated&quot;</span><span class="p">:</span> <span class="s2">&quot;2017-11-17T17:44:04Z&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><em>Csv Example</em>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="s1">&#39;point_class,display_name,native_name,</span>
+<span class="n">equipment_type</span><span class="p">,</span><span class="n">equipment_name</span><span class="p">,</span><span class="n">eco_point_id</span>
+
+
+<span class="n">SpaceAirTemperature</span><span class="p">,</span><span class="n">SpaceTemp</span><span class="p">,</span>
+<span class="n">UCSB</span><span class="o">/</span><span class="mi">275</span><span class="o">/</span><span class="n">VAV_301</span><span class="o">/</span><span class="n">NAE11</span><span class="o">/</span><span class="n">N2</span><span class="o">-</span><span class="mf">2.275</span><span class="o">-</span><span class="n">VAV</span><span class="o">-</span><span class="mf">301.</span><span class="n">ZN</span><span class="o">-</span><span class="n">T</span><span class="p">,</span><span class="n">VAV</span><span class="p">,</span><span class="n">VAV_301</span><span class="p">,</span><span class="mi">85743</span><span class="p">,</span>
+
+
+<span class="n">SpaceAirTemperatureSetPointWhenCooling</span><span class="p">,</span>
+<span class="n">SpaceTempSetPoint_ActualCooling</span><span class="p">,</span>
+<span class="n">UCSB</span><span class="o">/</span><span class="mi">275</span><span class="o">/</span><span class="n">VAV_301</span><span class="o">/</span><span class="n">NAE11</span><span class="o">/</span><span class="n">N2</span><span class="o">-</span><span class="mf">2.275</span><span class="o">-</span><span class="n">VAV</span><span class="o">-</span><span class="mf">301.</span><span class="n">ACLG</span><span class="o">-</span><span class="n">SET</span><span class="p">,</span><span class="n">VAV</span><span class="p">,</span><span class="n">VAV_301</span><span class="p">,</span>
+<span class="mi">85744</span><span class="p">,</span>
+
+<span class="n">SpaceAirTemperatureSetPointWhenHeating</span><span class="p">,</span>
+<span class="n">SpaceTempSetPoint_ActualHeating</span><span class="p">,</span>
+<span class="n">UCSB</span><span class="o">/</span><span class="mi">275</span><span class="o">/</span><span class="n">VAV_301</span><span class="o">/</span><span class="n">NAE11</span><span class="o">/</span><span class="n">N2</span><span class="o">-</span><span class="mf">2.275</span><span class="o">-</span><span class="n">VAV</span><span class="o">-</span><span class="mf">301.</span><span class="n">AHTG</span><span class="o">-</span><span class="n">SET</span><span class="p">,</span><span class="n">VAV</span><span class="p">,</span><span class="n">VAV_301</span><span class="p">,</span><span class="mi">85745</span><span class="s1">&#39;</span>
+</pre></div>
+</div>
+<p><em>Tuple Example</em>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">response_tuple</span><span class="p">(</span><span class="n">point_class</span><span class="o">=</span><span class="s1">&#39;SpaceAirTemperature&#39;</span><span class="p">,</span> <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;SpaceTemp&#39;</span><span class="p">,</span>
+                <span class="n">native_name</span><span class="o">=</span><span class="s1">&#39;UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.ZN-T&#39;</span><span class="p">,</span>
+                <span class="n">equipment_type</span><span class="o">=</span><span class="s1">&#39;VAV&#39;</span><span class="p">,</span> <span class="n">equipment_name</span><span class="o">=</span><span class="s1">&#39;VAV_301&#39;</span><span class="p">,</span> <span class="n">eco_point_id</span><span class="o">=</span><span class="mi">85743</span><span class="p">),</span>
+ <span class="n">response_tuple</span><span class="p">(</span><span class="n">point_class</span><span class="o">=</span><span class="s1">&#39;SpaceAirTemperatureSetPointWhenCooling&#39;</span><span class="p">,</span>
+                <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;SpaceTempSetPoint_ActualCooling&#39;</span><span class="p">,</span>
+                <span class="n">native_name</span><span class="o">=</span><span class="s1">&#39;UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.ACLG-SET&#39;</span><span class="p">,</span>
+                <span class="n">equipment_type</span><span class="o">=</span><span class="s1">&#39;VAV&#39;</span><span class="p">,</span> <span class="n">equipment_name</span><span class="o">=</span><span class="s1">&#39;VAV_301&#39;</span><span class="p">,</span> <span class="n">eco_point_id</span><span class="o">=</span><span class="mi">85744</span><span class="p">)]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>And invalid api request will return back the raw api response.</p>
+<dl class="last docutils">
+<dt><em>Example</em>:</dt>
+<dd>{“message”: {“NoData”: “No data for provided parameters”}}</dd>
+</dl>
+</div>
+</div></blockquote>
+<p><strong>Example Usage:</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">eco_connect</span> <span class="k">import</span> <span class="n">FactsService</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">facts_service</span> <span class="o">=</span> <span class="n">FactsService</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">facts_service</span><span class="o">.</span><span class="n">get_point_mapping</span><span class="p">(</span><span class="n">building_id</span><span class="o">=</span><span class="mi">26</span><span class="p">,</span>
+<span class="go">                                    result_format=&#39;json&#39;)</span>
+<span class="go">        {</span>
+<span class="go">          &quot;data&quot;: [</span>
+<span class="go">            {</span>
+<span class="go">              &quot;equipment_name&quot;: &quot;VAV_01&quot;,</span>
+<span class="go">              &quot;equipment_type&quot;: &quot;VAV&quot;,</span>
+<span class="go">              &quot;native_name&quot;: &quot;Native-Name-1&quot;,</span>
+<span class="go">              &quot;eco_point_id&quot;: 3,</span>
+<span class="go">              &quot;point_class&quot;: &quot;SpaceAirTemperature&quot;,</span>
+<span class="go">              &quot;native_name_id&quot;: 1283,</span>
+<span class="go">              &quot;display_name&quot;: &quot;SpaceTemp&quot;,</span>
+<span class="go">              &quot;last_updated&quot;: &quot;2017-11-17T17:44:04Z&quot;</span>
+<span class="go">            },</span>
+<span class="go">            {</span>
+<span class="go">              &quot;equipment_name&quot;: &quot;VAV_02&quot;,</span>
+<span class="go">              &quot;equipment_type&quot;: &quot;VAV&quot;,</span>
+<span class="go">              &quot;native_name&quot;: &quot;Native-Name-1&quot;,</span>
+<span class="go">              &quot;eco_point_id&quot;: 4,</span>
+<span class="go">              &quot;point_class&quot;: &quot;SpaceAirTemperature&quot;,</span>
+<span class="go">              &quot;native_name_id&quot;: 1283,</span>
+<span class="go">              &quot;display_name&quot;: &quot;SpaceTemp&quot;,</span>
+<span class="go">              &quot;last_updated&quot;: &quot;2017-11-17T17:44:04Z&quot;</span>
+<span class="go">            }</span>
+<span class="go">          ]</span>
+<span class="go">        }</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>

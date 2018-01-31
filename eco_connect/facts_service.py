@@ -31,7 +31,8 @@ class FactsService(BaseRequest):
         if environment_name == 'dev':
             self.hostname = 'http://127.0.0.1:5000/api/v1/'
         else:
-            self.hostname = f'https://facts.{self.env}.ecorithm.com/api/{version}/'
+            self.hostname = (f'https://facts.{self.env}.'
+                             f'ecorithm.com/api/{version}/')
         super().__init__()
 
     def get_facts(self,
@@ -780,22 +781,203 @@ class FactsService(BaseRequest):
                           display_name_expression=[],
                           is_active=True,
                           result_format='pandas'):
-        """Get the point mapping for a building id."""
+        """Return the point mapping for a building.
+
+        API documentation:
+        http://facts.prod.ecorithm.com/api/v1/#/Point-Mapping/point_mapping_get
+
+        **Args**:
+
+           **building_id** (str):  Building id to get facts for.
+
+                *Example*: 1
+
+        **Kwargs**:
+
+           **equipment_names** (list):  List of equipment names to filter facts
+           for.
+
+                *Example*: ['VAV_01', 'VAV_02']
+
+           **equipment_types** (list):  List of equipment types to filter facts
+           for.
+
+                *Example*: ['VAV', 'AHU']
+
+           **point_classes** (list):  List of point_classes to filter facts
+           for.
+
+                *Example*: ['SpaceAirTemperature', 'CoolingCoilUnitFeedback']
+
+           **eco_point_ids** (list):  List of eco_point_ids to filter facts
+           for.
+
+                *Example*: [1, 2, 3]
+
+           **display_names** (list):  List of display_names to filter facts
+           for.
+
+                *Example*: ['SpaceTemp', 'AirFlow']
+
+           **native_names** (list):  List of native_names to filter facts
+           for.
+
+                *Example*: ['name-1', 'name-2']
+
+           **point_class_expression** (list):  List of equipment / equipment type +
+           point class regex expressions to filter facts. Equipment / equipment
+           type and point class regex expressions are space delimited.
+           for.
+
+                *Example*: ['VAV.* SpaceAirTemperature', 'AHU Space.*']
+
+           **native_name_expression** (list):  List of native-name regex
+           expressions to filter facts.
+
+                *Example*: ['nam.*', 'nati-.*']
+
+           **display_name_expression** (list): List of equipment / equipment type +
+           display name regex expressions to filter facts. Equipment /
+           equipment type and point class regex expressions are space
+           delimited.
+
+                *Example*: ['VAV.* SpaceAirTemperature', 'AHU Space.*']
+
+           **is_active** (boolean):  Return the active / in-active native-names
+
+                *Example*: True
+
+           **result_format** (str): Output format type. (Pandas, tuple, csv,
+           json)
+
+                *Example*: 'pandas'
+
+
+        **Returns**:
+           (DataFrame or list or csv or json depending on the requested
+           result format).
+
+        *DataFrame Example*::
+
+            index    eco_point_id     display_name   native_name        point_class           equipment_name   equipment_type        last_updated
+            =====  ================   ============  ============  =========================   ==============  ================  =======================
+            0            192          'SpaceTemp'     'name-1'    'SpaceAirTemperature'         'VAV-01'        'VAV'            "2017-12-07T19:04:18Z"
+
+            1            304          'CoolingCoil'   'name-2'    'CoolingCoilUnitFeedback'     'AHU-01'        'AHU'            "2017-12-07T19:04:18Z"
+
+
+
+        *Json Example*::
+
+            {
+              "data": [
+                {
+                  "equipment_name": "VAV_01",
+                  "equipment_type": "VAV",
+                  "native_name": "Native-Name-1",
+                  "eco_point_id": 3,
+                  "point_class": "SpaceAirTemperature",
+                  "native_name_id": 1283,
+                  "display_name": "SpaceTemp",
+                  "last_updated": "2017-11-17T17:44:04Z"
+                },
+                {
+                  "equipment_name": "VAV_02",
+                  "equipment_type": "VAV",
+                  "native_name": "Native-Name-1",
+                  "eco_point_id": 4,
+                  "point_class": "SpaceAirTemperature",
+                  "native_name_id": 1283,
+                  "display_name": "SpaceTemp",
+                  "last_updated": "2017-11-17T17:44:04Z"
+                }
+              ]
+            }
+
+        *Csv Example*::
+
+                'point_class,display_name,native_name,
+                equipment_type,equipment_name,eco_point_id
+
+
+                SpaceAirTemperature,SpaceTemp,
+                UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.ZN-T,VAV,VAV_301,85743,
+
+
+                SpaceAirTemperatureSetPointWhenCooling,
+                SpaceTempSetPoint_ActualCooling,
+                UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.ACLG-SET,VAV,VAV_301,
+                85744,
+
+                SpaceAirTemperatureSetPointWhenHeating,
+                SpaceTempSetPoint_ActualHeating,
+                UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.AHTG-SET,VAV,VAV_301,85745'
+
+
+        *Tuple Example*::
+
+            [response_tuple(point_class='SpaceAirTemperature', display_name='SpaceTemp',
+                            native_name='UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.ZN-T',
+                            equipment_type='VAV', equipment_name='VAV_301', eco_point_id=85743),
+             response_tuple(point_class='SpaceAirTemperatureSetPointWhenCooling',
+                            display_name='SpaceTempSetPoint_ActualCooling',
+                            native_name='UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.ACLG-SET',
+                            equipment_type='VAV', equipment_name='VAV_301', eco_point_id=85744)]
+
+        .. note::
+           And invalid api request will return back the raw api response.
+
+           *Example*:
+            {"message": {"NoData": "No data for provided parameters"}}
+
+
+    **Example Usage:**
+
+    >>> from eco_connect import FactsService
+    >>> facts_service = FactsService()
+    >>> facts_service.get_point_mapping(building_id=26,
+                                        result_format='json')
+            {
+              "data": [
+                {
+                  "equipment_name": "VAV_01",
+                  "equipment_type": "VAV",
+                  "native_name": "Native-Name-1",
+                  "eco_point_id": 3,
+                  "point_class": "SpaceAirTemperature",
+                  "native_name_id": 1283,
+                  "display_name": "SpaceTemp",
+                  "last_updated": "2017-11-17T17:44:04Z"
+                },
+                {
+                  "equipment_name": "VAV_02",
+                  "equipment_type": "VAV",
+                  "native_name": "Native-Name-1",
+                  "eco_point_id": 4,
+                  "point_class": "SpaceAirTemperature",
+                  "native_name_id": 1283,
+                  "display_name": "SpaceTemp",
+                  "last_updated": "2017-11-17T17:44:04Z"
+                }
+              ]
+            }
+
+        """
         url = self.hostname + f'building/{building_id}/point-mapping'
         data = {
             'is_active': is_active,
-            'eco_point_id': ','.join(map(str, eco_point_ids)),
-            'equipment_name': ','.join(map(str, equipment_names)),
-            'equipment_type': ','.join(map(str, equipment_types)),
-            'point_class': ','.join(map(str, point_classes)),
-            'display_name': ','.join(map(str, display_names)),
-            'native_name': ','.join(map(str, native_names)),
-            'point_class_expression': ','.join(map(str,
-                                                   point_class_expression)),
-            'display_name_expression': ','.join(map(str,
-                                                    display_name_expression)),
-            'native_name_expression': ','.join(map(str,
-                                                   native_name_expression))}
+            'eco_point_id': ','.join(map(str, eco_point_ids)) or None,
+            'equipment_name': ','.join(map(str, equipment_names)) or None,
+            'equipment_type': ','.join(map(str, equipment_types)) or None,
+            'point_class': ','.join(map(str, point_classes)) or None,
+            'display_name': ','.join(map(str, display_names)) or None,
+            'native_name': ','.join(map(str, native_names)) or None,
+            'point_class_expression': ','.join(
+                map(str, point_class_expression)) or None,
+            'display_name_expression': ','.join(
+                map(str, display_name_expression)) or None,
+            'native_name_expression': ','.join(
+                map(str, native_name_expression)) or None}
         response = self.get(url, data=data)
         parser = self._get_parser(result_format, data_key='data')
 
@@ -859,7 +1041,106 @@ class FactsService(BaseRequest):
     def get_equipment(self, building_id, equipment_name=None,
                       equipment_type=None,
                       is_active=True, result_format='pandas'):
-        """Get the equipment for a building id."""
+        """Return the equipments for a building.
+
+        API documentation:
+        http://facts.prod.ecorithm.com/api/v1/#/Equipment/equipment_get
+
+        **Args**:
+
+           **building_id** (str):  Building id to get facts for.
+
+                *Example*: 1
+
+        **Kwargs**:
+
+           **equipment_name** (string):  Equipment name to filter on.
+
+                *Example*: 'VAV_01'
+
+           **equipment_type** (string):  equipment_type to filter on.
+
+                *Example*: 'AHU'
+
+           **is_active** (boolean):  Return the active / in-active native-names
+
+                *Example*: True
+
+
+           **result_format** (str): Output format type. (Pandas, tuple, csv,
+           json)
+
+                *Example*: 'pandas'
+
+
+        **Returns**:
+           (DataFrame or list or csv or json depending on the requested
+           result format).
+
+        *DataFrame Example*::
+
+            index    equipment_id     equipment_type    equipment_name       last_updated
+            =====  ================   ==============   ================   =====================
+            0            192              'AHU'            'VAV-01'       '2017-12-07T19:04:18Z'
+            1            304              'VAV'            'AHU-01'       '2017-12-07T19:04:18Z'
+
+
+        *Json Example*::
+
+            {'data': [{'equipment_id': 1092,
+                       'equipment_name': 'AHU_G1',
+                       'equipment_type': 'AHU',
+                       'last_updated': '2017-12-07T19:04:18Z'},
+                       {'equipment_id': 1093,
+                        'equipment_name': 'AHU_G1_ExhaustFan',
+                        'equipment_type': 'AHU',
+                        'last_updated': '2017-12-07T19:04:18Z'}]
+            }
+
+        *Csv Example*::
+
+                'equipment_id,equipment_type,equipment_name,last_updated
+
+
+                1092,AHU,AHU_G1,2017-12-07T19:04:18Z
+
+
+                1094,AHU,AHU_G1_ReturnFanVFD,2017-12-07T19:04:18Z
+
+
+        *Tuple Example*::
+
+            [response_tuple(equipment_id=1092, equipment_type='AHU',
+                            equipment_name='AHU_G1',
+                            last_updated='2017-12-07T19:04:18Z'),
+             response_tuple(equipment_id=1093, equipment_type='AHU',
+                            equipment_name='AHU_G1_ExhaustFan',
+                            last_updated='2017-12-07T19:04:18Z')]
+
+        .. note::
+           And invalid api request will return back the raw api response.
+
+           *Example*:
+            {"message": {"NoData": "No data for provided parameters"}}
+
+
+    **Example Usage:**
+
+    >>> from eco_connect import FactsService
+    >>> facts_service = FactsService()
+    >>> facts_service.get_equipment(building_id=26,
+                                    result_format='json')
+            {'data': [{'equipment_id': 1092,
+                       'equipment_name': 'AHU_G1',
+                       'equipment_type': 'AHU',
+                       'last_updated': '2017-12-07T19:04:18Z'},
+                       {'equipment_id': 1093,
+                        'equipment_name': 'AHU_G1_ExhaustFan',
+                        'equipment_type': 'AHU',
+                        'last_updated': '2017-12-07T19:04:18Z'}]
+            }
+
+        """
         url = self.hostname + f'building/{building_id}/equipment'
         params = {'equipment_type': equipment_type,
                   'is_active': is_active,
@@ -896,7 +1177,123 @@ class FactsService(BaseRequest):
     def get_native_names(self, building_id,
                          native_name=None,
                          is_active=True, result_format='pandas'):
-        """Get the native-names for a building id."""
+        """Return the native names for a building.
+
+        API documentation:
+        http://facts.prod.ecorithm.com/api/v1/#/Native-Names/native_names_get
+
+        **Args**:
+
+           **building_id** (str):  Building id to get facts for.
+
+                *Example*: 1
+
+        **Kwargs**:
+
+           **native_name** (string):  Filter on this native_name
+
+                *Example*: 'native-name-1'
+
+           **is_active** (boolean):  Return the active / in-active native-names
+
+                *Example*: True
+
+           **result_format** (str): Output format type. (Pandas, tuple, csv,
+           json)
+
+                *Example*: 'pandas'
+
+
+        **Returns**:
+           (DataFrame or list or csv or json depending on the requested
+           result format).
+
+        *DataFrame Example*::
+
+            index   native_name_id     native_name   native_name   expecting_data         origin       trend_period      last_updated
+            =====  ================   ============  ============  ================   ==============  ================  ====================
+            0            192          'name-1'        'name-1'          True            'CLIENT'        300 seconds    2017-12-19T20:36:36Z
+
+            1            304          'name-2'        'name-2'          False          'ECORITHM'       300 seconds    2017-12-19T20:36:36Z
+
+
+
+        *Json Example*::
+
+            {'data': [{'expecting_data': True,
+               'last_updated': '2017-12-19T20:36:36Z',
+               'native_name': 'UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.ZN-T',
+               'native_name_id': 88826,
+               'origin': 'CLIENT',
+               'trend_period': '300 seconds',
+               'trend_type': 'INTERVAL'},
+              {'expecting_data': True,
+               'last_updated': '2017-12-19T20:36:36Z',
+               'native_name': 'UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.ACLG-SET',
+               'native_name_id': 88827,
+               'origin': 'CLIENT',
+               'trend_period': '300 seconds',
+               'trend_type': 'INTERVAL'}
+               }
+
+        *Csv Example*::
+
+                'native_name_id,native_name,expecting_data,
+                origin,trend_type,trend_period,last_updated
+
+
+                88826,UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.ZN-T,
+                True,CLIENT,INTERVAL,300 seconds,2017-12-19T20:36:36Z,
+
+                88827,UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.ACLG-SET,True,
+                CLIENT,INTERVAL,300 seconds,2017-12-19T20:36:36Z'
+
+
+        *Tuple Example*::
+
+            [response_tuple(native_name_id=88826,
+                            native_name='UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.ZN-T',
+                            expecting_data=True, origin='CLIENT',
+                            trend_type='INTERVAL',
+                            trend_period='300 seconds',
+                            last_updated='2017-12-19T20:36:36Z'),
+             response_tuple(native_name_id=88827,
+                            native_name='UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.ACLG-SET',
+                            expecting_data=True, origin='CLIENT',
+                            trend_type='INTERVAL',
+                            trend_period='300 seconds',
+                            last_updated='2017-12-19T20:36:36Z')
+
+        .. note::
+           And invalid api request will return back the raw api response.
+
+           *Example*:
+            {"message": {"NoData": "No data for provided parameters"}}
+
+
+    **Example Usage:**
+
+    >>> from eco_connect import FactsService
+    >>> facts_service = FactsService()
+    >>> facts_service.get_native_names(building_id=26,
+                                       result_format='json')
+            {'data': [{'expecting_data': True,
+               'last_updated': '2017-12-19T20:36:36Z',
+               'native_name': 'UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.ZN-T',
+               'native_name_id': 88826,
+               'origin': 'CLIENT',
+               'trend_period': '300 seconds',
+               'trend_type': 'INTERVAL'},
+              {'expecting_data': True,
+               'last_updated': '2017-12-19T20:36:36Z',
+               'native_name': 'UCSB/275/VAV_301/NAE11/N2-2.275-VAV-301.ACLG-SET',
+               'native_name_id': 88827,
+               'origin': 'CLIENT',
+               'trend_period': '300 seconds',
+               'trend_type': 'INTERVAL'}
+               }
+
+        """
         url = self.hostname + f'building/{building_id}/native-names'
         params = {'native_name': native_name,
                   'is_active': is_active}

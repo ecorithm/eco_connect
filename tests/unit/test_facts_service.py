@@ -40,6 +40,17 @@ class TestFactsService:
         _validate_env.assert_called_once_with(environment_name='prod')
         _get_credentials.assert_called_once()
 
+    def test__init__dev(self, mocker):
+        _validate_env = mocker.patch(self.CLASS_PATH + '._validate_env')
+        _validate_env.return_value = 'dev'
+        _get_credentials = mocker.patch(self.CLASS_PATH + '._set_credentials')
+
+        facts_service = FactsService(environment_name='dev')
+        assert facts_service.env == 'dev'
+        assert facts_service.hostname == ('http://127.0.0.1:5000/api/v1/')
+        _validate_env.assert_called_once_with(environment_name='dev')
+        _get_credentials.assert_called_once()
+
     def test_get_facts_json(self, mocker, facts_service):
         building_id = 1
         start_date = '2017-12-01 00:00'
