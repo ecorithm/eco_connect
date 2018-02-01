@@ -987,7 +987,7 @@ class FactsService(BaseRequest):
 
     def delete_point_mapping(self, building_id, eco_point_ids=[]):
         url = self.hostname + f'building/{building_id}/point-mapping'
-        payload = {'eco_point_id': ','.join(map(str, eco_point_ids))}
+        payload = {'eco_point_id': eco_point_ids}
         result_format = 'json'
         response = self.delete(url, data=payload, encode_type='form')
         parser = self._get_parser(result_format)
@@ -1155,7 +1155,7 @@ class FactsService(BaseRequest):
     def delete_equipment(self, building_id, equipments=[]):
         url = self.hostname + f'building/{building_id}/equipment'
         result_format = 'json'
-        payload = {'equipment_name': ','.join(map(str, equipments))}
+        payload = {'equipment_name': equipments}
         response = self.delete(url, data=payload, encode_type='form')
         parser = self._get_parser(result_format)
 
@@ -1318,7 +1318,7 @@ class FactsService(BaseRequest):
     def delete_native_names(self, building_id, native_names=[]):
         url = self.hostname + f'building/{building_id}/native-names'
         result_format = 'json'
-        payload = {'native_name': ','.join(map(str, native_names))}
+        payload = {'native_name': native_names}
         response = self.delete(url, data=payload, encode_type='form')
         parser = self._get_parser(result_format)
 

@@ -1017,7 +1017,7 @@ class TestFactsService:
                                                     '_format_response',
                                                     return_value=('formated'
                                                                   '-result'))
-        mock_payload = {'eco_point_id': '1,2,3'}
+        mock_payload = {'eco_point_id': [1, 2, 3]}
         result = facts_service.delete_point_mapping(building_id=26,
                                                     eco_point_ids=[1, 2, 3])
         mock_get.assert_called_once_with(expected_url, data=mock_payload,
@@ -1207,7 +1207,7 @@ class TestFactsService:
                                                     '_format_response',
                                                     return_value=('formated'
                                                                   '-result'))
-        mock_payload = {'equipment_name': 'name-1,name-2'}
+        mock_payload = {'equipment_name': ['name-1', 'name-2']}
         result = facts_service.delete_equipment(building_id=26,
                                                 equipments=['name-1',
                                                             'name-2'])
@@ -1353,7 +1353,7 @@ class TestFactsService:
                                                     '_format_response',
                                                     return_value=('formated'
                                                                   '-result'))
-        mock_payload = {'native_name': 'name-1,name-2'}
+        mock_payload = {'native_name': ['name-1', 'name-2']}
         result = facts_service.delete_native_names(building_id=26,
                                                    native_names=['name-1',
                                                                  'name-2'])
