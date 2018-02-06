@@ -352,7 +352,10 @@ class FactsService(BaseRequest):
         result_df = self._pandas_fact_parser(response, data_key)
         return result_df.to_csv()
 
-    def put_facts(self, building_id, data=pd.DataFrame()):
+    def put_facts(self, building_id, data=pd.DataFrame(columns=['fact_time',
+                                                                'fact_value',
+                                                                'native_name']
+                                                       )):
         """Insert facts for a building.
 
         API documentation: http://facts.prod.ecorithm.com/api/v1/#/Facts/put
@@ -400,7 +403,12 @@ class FactsService(BaseRequest):
 """
 
         url = self.hostname + f'building/{building_id}/facts'
-        input_data = list(data.T.to_dict().values())
+        col_1 = data.columns[0]
+        col_2 = data.columns[1]
+        col_3 = data.columns[2]
+        input_data = [{col_1: row[0], col_2: row[1], col_3: row[2]}
+                      for row in data.values]
+
         response = self.put(url, data=input_data, encode_type='json')
         parser = self._get_parser(result_format='json')
         parsed_result = self._format_response(response,
@@ -513,11 +521,11 @@ class FactsService(BaseRequest):
                 *Example*: ['VAV.* SpaceAirTemperature', 'AHU Space.*']
 
            **period** (string): Aggregate period to average on. Supports the
-           following aggregates [duration, minute, hour, day, week, month, year]
+           following aggregates [minute, hour, day, week, month, year]
 
                 *Example*: 'hour'
 
-                *Default*: 'duration'
+                *Default*: 'day'
 
            **result_format** (str): Output format type. (Pandas, tuple, csv,
            json)
@@ -715,11 +723,12 @@ class FactsService(BaseRequest):
                                               **parser)
         return parsed_result
 
-    def put_building(self, building, building_id=None):
+    def put_building(self, building, building_id=None, time_zone=None):
         result_format = 'json'
         url = self.hostname + f'buildings'
-        payload = {'building': building,
-                   'building_id': building_id}
+        payload = {'building_name': building,
+                   'building_id': building_id,
+                   'time_zone': time_zone}
         response = self.put(url, data=payload)
         parser = self._get_parser(result_format)
         parsed_result = self._format_response(response,
