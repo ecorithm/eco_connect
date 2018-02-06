@@ -853,8 +853,9 @@ class TestFactsService:
         mock_put.assert_called_once_with('https://facts.prod.ecorithm.com/'
                                          'api/v1/buildings',
                                          data={
-                                             'building': mock_building_name,
-                                             'building_id': mock_building_id})
+                                             'building_name': mock_building_name,
+                                             'building_id': mock_building_id,
+                                             'time_zone': None})
 
     def test_delete_building(self, mocker, facts_service):
         mock_building_id = 51
