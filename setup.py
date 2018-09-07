@@ -32,5 +32,12 @@ setup(
     project_urls={
         "Documentation": "http://eco-connect.readthedocs.io/en/latest/",
         "Source Code": "https://github.com/ecorithm/eco_connect",
+    },
+    extras_require={
+        'docs': [
+            'sphinx',
+            'sphinx_rtd_theme'
+        ]
     }
+
 )
