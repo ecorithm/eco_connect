@@ -1,9 +1,11 @@
+dist: xenial
 language: python
+sudo: true
 python:
-    - "3.6"
-install:
-    - pip install . --upgrade
+  - "3.6"
+  - "3.7"
+install: "make"
 script:
-    python3 -m coverage run -m pytest
+  - make test
 after_success:
-    coveralls
+  coveralls

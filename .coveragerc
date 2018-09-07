@@ -1,9 +1,6 @@
 [report]
-
 exclude_lines =
     if __name__ == .__main__.:
-omit= */_version.py
 
 [run]
 source=eco_connect
-omit= */_version.py

@@ -1,23 +1,35 @@
-from setuptools import setup, find_packages
+from setuptools import setup
+from eco_connect.__version__ import __version__
 
-
-def get_requirements():
-    with open("requirements.txt") as f:
-        return f.read().splitlines()
-
+with open('README.rst', 'r') as f:
+    readme = f.read()
 
 setup(
     name='eco-connect',
-    version='0.23.4',
-    description='Ecorithm\'s eco-connect ',
-    long_description='Please see http://eco-connect.readthedocs.io/en/latest/ '
-    'for Documentation.',
-    license="Proprietary",
-    python_requires='>=3.6',
-    url='https://github.com/ecorithm/eco_connect_public',
-    packages=find_packages(exclude=['tests*']),
+    version=__version__,
+    description='Ecorithm\'s connector to Facts Service',
+    long_description=readme,
+    long_description_content_type='text/x-rst',
+    author="Ecorithm",
+    author_email="support@ecorithm.com",
+    url='https://ecorithm.com',
+    packages=['eco_connect'],
+    package_data={'': ['LICENSE']},
     include_package_data=True,
-    install_requires=get_requirements(),
+    python_requires='>=3.6',
+    install_requires=['pandas'],
+    license='MIT',
+    zip_safe=False,
+    classifiers=[
+        'Development Status :: 5 - Production/Stable',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: MIT License',
+        'Natural Language :: English',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3 :: Only',
+        'Topic :: Scientific/Engineering'
+    ],
     project_urls={
         "Documentation": "http://eco-connect.readthedocs.io/en/latest/",
         "Source Code": "https://github.com/ecorithm/eco_connect",

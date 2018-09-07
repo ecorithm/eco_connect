@@ -1,16 +1,13 @@
+import pandas as pd
 from collections import namedtuple
 from operator import attrgetter
-
-import pandas as pd
-
-
 from eco_connect.src.base_request import BaseRequest
 from eco_connect.src.request_parser import RequestParser
 from eco_connect.src.errors import RequestParserError
 
 
 class FactsService(BaseRequest):
-    """A class to connect to Ecorithm's facts-service api
+    """A class to connect to Ecorithm's facts-service API
     (https://facts.prod.ecorithm.com/api/v1/).
 
         **Args**:
