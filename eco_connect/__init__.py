@@ -2,6 +2,8 @@ import os
 import requests
 from eco_connect.facts_service import FactsService
 
+__version__ = '0.24'
+
 
 def validate_credentials():
     username = os.environ.get('ECO_CONNECT_USER', None)

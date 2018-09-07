@@ -1,5 +1,5 @@
 from setuptools import setup
-from eco_connect.__version__ import __version__
+from eco_connect import __version__
 
 with open('README.rst', 'r') as f:
     readme = f.read()
