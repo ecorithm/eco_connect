@@ -1,17 +1,5 @@
-
-update: all
-
-pin: True
-
-
-schedule: "every day"
-
-
-search: True
-
-
+pin: False
+schedule: "every week"
 requirements:
-  - requirements.txt:
-      # update all dependencies and pin them
-      update: all
-      pin: True
+  - Pipfile
+  - Pipfile.lock

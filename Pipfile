@@ -1,0 +1,12 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pandas = "*"
+
+[dev-packages]
+coveralls = "*"
+pytest = ">=2.8.0"
+pytest-mock = "*"

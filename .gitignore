@@ -65,7 +65,7 @@ instance/
 .scrapy
 
 # Sphinx documentation
-doc/_build/
+docs/_build/
 
 # PyBuilder
 target/
@@ -100,3 +100,6 @@ ENV/
 *.png
 *.jpg
 *.jpeg
+
+# Pytest
+.pytest_cache

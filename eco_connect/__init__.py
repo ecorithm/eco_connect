@@ -1,7 +1,8 @@
+import os
+import requests
 from eco_connect.facts_service import FactsService
 
-import requests
-import os
+__version__ = '0.24'
 
 
 def validate_credentials():
@@ -10,11 +11,10 @@ def validate_credentials():
     result = requests.get('https://facts.prod.ecorithm.com/',
                           auth=(username, password))
     if result.status_code == 200:
-        print('\033[92mEcorithm credentials succesfully validated!')
+        print('\033[92mEcorithm credentials succesfully validated!\033[0m')
         return True
-
     else:
-        print('\033[91mEcorithm credentials are not valid!')
+        print('\033[91mEcorithm credentials are not valid!\033[0m')
         return False
 
 

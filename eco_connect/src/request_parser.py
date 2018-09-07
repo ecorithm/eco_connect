@@ -1,8 +1,5 @@
-import os
-from collections import namedtuple
-
 import pandas as pd
-
+from collections import namedtuple
 from eco_connect.src.errors import RequestParserError
 
 
