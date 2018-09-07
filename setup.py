@@ -1,12 +1,11 @@
 from setuptools import setup
-from eco_connect import __version__
 
 with open('README.rst', 'r') as f:
     readme = f.read()
 
 setup(
     name='eco-connect',
-    version=__version__,
+    version='0.24.1',
     description='Ecorithm\'s connector to Facts Service',
     long_description=readme,
     long_description_content_type='text/x-rst',
