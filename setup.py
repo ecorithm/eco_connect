@@ -1,24 +1,21 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 with open('README.rst', 'r') as f:
     readme = f.read()
 
 setup(
     name='eco-connect',
-    version='0.24.1',
+    version='0.24.2',
     description='Ecorithm\'s connector to Facts Service',
     long_description=readme,
     long_description_content_type='text/x-rst',
     author="Ecorithm",
     author_email="support@ecorithm.com",
     url='https://ecorithm.com',
-    packages=['eco_connect'],
-    package_data={'': ['LICENSE']},
-    include_package_data=True,
+    packages=find_packages(),
     python_requires='>=3.6',
-    install_requires=['pandas'],
+    install_requires=['pandas', 'requests'],
     license='MIT',
-    zip_safe=False,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
