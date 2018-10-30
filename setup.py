@@ -5,7 +5,7 @@ with open('README.rst', 'r') as f:
 
 setup(
     name='eco-connect',
-    version='0.24.2',
+    version='0.24.3',
     description='Ecorithm\'s connector to Facts Service',
     long_description=readme,
     long_description_content_type='text/x-rst',
