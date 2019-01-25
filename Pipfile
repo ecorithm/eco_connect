@@ -8,6 +8,6 @@ pandas = "*"
 requests = "*"
 
 [dev-packages]
-coveralls = "*"
 pytest = ">=2.8.0"
+pytest-cov = "*"
 pytest-mock = "*"

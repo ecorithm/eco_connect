@@ -7,5 +7,3 @@ python:
 install: "make"
 script:
   - make test
-after_success:
-  coveralls
