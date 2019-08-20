@@ -23,33 +23,34 @@ class FactsService(BaseRequest):
                 *Example*: 'v1'
     """
 
-    def __init__(self, environment_name='prod', version='v1'):
+    def __init__(self, environment_name="prod", version="v1"):
         self.env = self._validate_env(environment_name=environment_name)
-        if environment_name == 'dev':
-            self.hostname = 'http://127.0.0.1:5000/api/v1/'
+        if environment_name == "dev":
+            self.hostname = "http://127.0.0.1:5000/api/v1/"
         else:
-            self.hostname = (f'https://facts.{self.env}.'
-                             f'ecorithm.com/api/{version}/')
+            self.hostname = f"https://facts.{self.env}.ecorithm.com/api/{version}/"
         super().__init__()
 
-    def get_facts(self,
-                  building_id,
-                  start_date,
-                  end_date,
-                  start_hour='00:00',
-                  end_hour='23:55',
-                  equipment_names=[],
-                  equipment_types=[],
-                  excluded_days=[],
-                  excluded_dates=[],
-                  point_classes=[],
-                  eco_point_ids=[],
-                  display_names=[],
-                  native_names=[],
-                  point_class_expression=[],
-                  native_name_expression=[],
-                  display_name_expression=[],
-                  result_format='pandas'):
+    def get_facts(
+        self,
+        building_id,
+        start_date,
+        end_date,
+        start_hour="00:00",
+        end_hour="23:55",
+        equipment_names=[],
+        equipment_types=[],
+        excluded_days=[],
+        excluded_dates=[],
+        point_classes=[],
+        eco_point_ids=[],
+        display_names=[],
+        native_names=[],
+        point_class_expression=[],
+        native_name_expression=[],
+        display_name_expression=[],
+        result_format="pandas",
+    ):
         """Return the sensor facts for a building.
 
         API documentation: http://facts.prod.ecorithm.com/api/v1/#/Facts/Facts_get
@@ -280,79 +281,81 @@ class FactsService(BaseRequest):
 
         """
 
-        url = self.hostname + f'building/{building_id}/facts'
+        url = self.hostname + f"building/{building_id}/facts"
 
         data = {
-            'start_date': start_date,
-            'end_date': end_date,
-            'start_hour': start_hour,
-            'end_hour': end_hour,
-            'excluded_dates': excluded_dates,
-            'excluded_days': excluded_days,
-            'eco_point_ids': eco_point_ids,
-            'equipment_names': equipment_names,
-            'equipment_types': equipment_types,
-            'point_classes': point_classes,
-            'display_names': display_names,
-            'native_names': native_names,
-            'point_class_expression': point_class_expression,
-            'display_name_expression': display_name_expression,
-            'native_name_expression': native_name_expression}
+            "start_date": start_date,
+            "end_date": end_date,
+            "start_hour": start_hour,
+            "end_hour": end_hour,
+            "excluded_dates": excluded_dates,
+            "excluded_days": excluded_days,
+            "eco_point_ids": eco_point_ids,
+            "equipment_names": equipment_names,
+            "equipment_types": equipment_types,
+            "point_classes": point_classes,
+            "display_names": display_names,
+            "native_names": native_names,
+            "point_class_expression": point_class_expression,
+            "display_name_expression": display_name_expression,
+            "native_name_expression": native_name_expression,
+        }
 
-        if result_format.lower() == 'pandas':
-            parser_args = {'data_key': 'data'}
+        if result_format.lower() == "pandas":
+            parser_args = {"data_key": "data"}
             fact_parser = self._pandas_fact_parser
-        elif result_format.lower() == 'json':
+        elif result_format.lower() == "json":
             fact_parser = RequestParser.json_parser
             parser_args = {}
-        elif result_format.lower() == 'tuple':
+        elif result_format.lower() == "tuple":
             fact_parser = self._tuple_fact_parser
-            parser_args = {'data_key': 'data'}
-        elif result_format.lower() == 'csv':
+            parser_args = {"data_key": "data"}
+        elif result_format.lower() == "csv":
             fact_parser = self._csv_fact_parser
-            parser_args = {'data_key': 'data'}
+            parser_args = {"data_key": "data"}
         else:
-            raise ValueError(f'{result_format} is not valid!')
+            raise ValueError(f"{result_format} is not valid!")
 
         response = self.post(url, data=data)
 
         return self._format_response(response, fact_parser, parser_args)
 
-    def _tuple_fact_parser(self, response, data_key='data'):
+    def _tuple_fact_parser(self, response, data_key="data"):
         try:
             result = response.json()
         except (ValueError):
-            raise RequestParserError('Unable to parse the response.',
-                                     response.text)
+            raise RequestParserError("Unable to parse the response.", response.text)
 
         result = result[data_key]
 
-        tuple_names = ['fact_time', 'fact_value'] +\
-            list(list(result.values())[0]['meta'].keys())
+        tuple_names = ["fact_time", "fact_value"] + list(
+            list(result.values())[0]["meta"].keys()
+        )
 
-        response_tuple = namedtuple('response_tuple', tuple_names)
+        response_tuple = namedtuple("response_tuple", tuple_names)
         parsed_result = []
         for dpoint_id, data in result.items():
-            meta = data['meta']
-            fact_data = data['data']
+            meta = data["meta"]
+            fact_data = data["data"]
             for fact_time, fact_value in fact_data.items():
-                row = {'fact_time': fact_time, 'fact_value': fact_value}
+                row = {"fact_time": fact_time, "fact_value": fact_value}
                 row.update(meta)
                 parsed_result.append(response_tuple(**row))
-        return sorted(parsed_result, key=attrgetter('eco_point_id'))
+        return sorted(parsed_result, key=attrgetter("eco_point_id"))
 
-    def _pandas_fact_parser(self, response, data_key='data'):
+    def _pandas_fact_parser(self, response, data_key="data"):
         tuple_response = self._tuple_fact_parser(response, data_key)
         return pd.DataFrame(tuple_response)
 
-    def _csv_fact_parser(self, response, data_key='data'):
+    def _csv_fact_parser(self, response, data_key="data"):
         result_df = self._pandas_fact_parser(response, data_key)
         return result_df.to_csv()
 
-    def put_facts(self, building_id, data=pd.DataFrame(columns=['fact_time',
-                                                                'fact_value',
-                                                                'native_name']
-                                                       )):
+    def put_facts(
+        self,
+        building_id,
+        data=pd.DataFrame(columns=["fact_time", "fact_value", "native_name"]),
+    ):
         """Insert facts for a building.
 
         API documentation: http://facts.prod.ecorithm.com/api/v1/#/Facts/put
@@ -399,38 +402,40 @@ class FactsService(BaseRequest):
          'message': {'field_errors': ['native-name-1']}}
 """
 
-        url = self.hostname + f'building/{building_id}/facts'
+        url = f"{self.hostname}building/{building_id}/facts"
         col_1 = data.columns[0]
         col_2 = data.columns[1]
         col_3 = data.columns[2]
-        input_data = [{col_1: row[0], col_2: row[1], col_3: row[2]}
-                      for row in data.values]
+        input_data = [
+            {col_1: row[0], col_2: row[1], col_3: row[2]} for row in data.values
+        ]
 
-        response = self.put(url, data=input_data, encode_type='json')
-        parser = self._get_parser(result_format='json')
-        parsed_result = self._format_response(response,
-                                              **parser)
+        response = self.put(url, data=input_data, encode_type="json")
+        parser = self._get_parser(result_format="json")
+        parsed_result = self._format_response(response, **parser)
         return parsed_result
 
-    def get_avg_facts(self,
-                      building_id,
-                      start_date,
-                      end_date,
-                      start_hour='00:00',
-                      end_hour='23:55',
-                      period='day',
-                      equipment_names=[],
-                      equipment_types=[],
-                      excluded_days=[],
-                      excluded_dates=[],
-                      point_classes=[],
-                      eco_point_ids=[],
-                      display_names=[],
-                      native_names=[],
-                      point_class_expression=[],
-                      native_name_expression=[],
-                      display_name_expression=[],
-                      result_format='pandas'):
+    def get_avg_facts(
+        self,
+        building_id,
+        start_date,
+        end_date,
+        start_hour="00:00",
+        end_hour="23:55",
+        period="day",
+        equipment_names=[],
+        equipment_types=[],
+        excluded_days=[],
+        excluded_dates=[],
+        point_classes=[],
+        eco_point_ids=[],
+        display_names=[],
+        native_names=[],
+        point_class_expression=[],
+        native_name_expression=[],
+        display_name_expression=[],
+        result_format="pandas",
+    ):
         """Return the average sensor facts for a building.
 
         API documentation: http://facts.prod.ecorithm.com/api/v1/#/Facts/get_avg
@@ -669,124 +674,122 @@ class FactsService(BaseRequest):
 
         """
 
-        url = self.hostname + f'building/{building_id}/avg-facts'
+        url = f"{self.hostname}building/{building_id}/avg-facts"
         data = {
-            'start_date': start_date,
-            'end_date': end_date,
-            'start_hour': start_hour,
-            'end_hour': end_hour,
-            'excluded_days': excluded_days,
-            'excluded_dates': excluded_dates,
-            'period': period,
-            'eco_point_ids': eco_point_ids,
-            'equipment_names': equipment_names,
-            'equipment_types': equipment_types,
-            'point_classes': point_classes,
-            'display_names': display_names,
-            'native_names': native_names,
-            'point_class_expression': point_class_expression,
-            'display_name_expression': display_name_expression,
-            'native_name_expression': native_name_expression}
+            "start_date": start_date,
+            "end_date": end_date,
+            "start_hour": start_hour,
+            "end_hour": end_hour,
+            "excluded_days": excluded_days,
+            "excluded_dates": excluded_dates,
+            "period": period,
+            "eco_point_ids": eco_point_ids,
+            "equipment_names": equipment_names,
+            "equipment_types": equipment_types,
+            "point_classes": point_classes,
+            "display_names": display_names,
+            "native_names": native_names,
+            "point_class_expression": point_class_expression,
+            "display_name_expression": display_name_expression,
+            "native_name_expression": native_name_expression,
+        }
         response = self.post(url, data=data)
-        if result_format.lower() == 'pandas':
-            parser_args = {'data_key': 'data'}
+        if result_format.lower() == "pandas":
+            parser_args = {"data_key": "data"}
             fact_avg_parser = self._pandas_fact_parser
-        elif result_format.lower() == 'json':
+        elif result_format.lower() == "json":
             fact_avg_parser = RequestParser.json_parser
             parser_args = {}
-        elif result_format.lower() == 'tuple':
+        elif result_format.lower() == "tuple":
             fact_avg_parser = self._tuple_fact_parser
-            parser_args = {'data_key': 'data'}
-        elif result_format.lower() == 'csv':
+            parser_args = {"data_key": "data"}
+        elif result_format.lower() == "csv":
             fact_avg_parser = self._csv_fact_parser
-            parser_args = {'data_key': 'data'}
+            parser_args = {"data_key": "data"}
         else:
-            raise ValueError(f'{result_format} is not valid!')
+            raise ValueError(f"{result_format} is not valid!")
 
-        parsed_result = self._format_response(response,
-                                              parser=fact_avg_parser,
-                                              parser_args=parser_args)
+        parsed_result = self._format_response(
+            response, parser=fact_avg_parser, parser_args=parser_args
+        )
         return parsed_result
 
-    def get_buildings(self, building_id=None,
-                      is_active=True, result_format='pandas'):
+    def get_buildings(self, building_id=None, is_active=True, result_format="pandas"):
         """Return the meta information for buildings."""
-        url = self.hostname + f'buildings'
-        params = {'building_id': building_id, 'is_active': is_active}
+        url = f"{self.hostname}buildings"
+        params = {"building_id": building_id, "is_active": is_active}
         response = self.get(url, data=params)
-        parser = self._get_parser(result_format, data_key='data')
+        parser = self._get_parser(result_format, data_key="data")
 
-        parsed_result = self._format_response(response,
-                                              **parser)
+        parsed_result = self._format_response(response, **parser)
         return parsed_result
 
     def put_building(self, building, building_id=None, time_zone=None):
-        result_format = 'json'
-        url = self.hostname + f'buildings'
-        payload = {'building_name': building,
-                   'building_id': building_id,
-                   'time_zone': time_zone}
+        result_format = "json"
+        url = f"{self.hostname}buildings"
+        payload = {
+            "building_name": building,
+            "building_id": building_id,
+            "time_zone": time_zone,
+        }
         response = self.put(url, data=payload)
         parser = self._get_parser(result_format)
-        parsed_result = self._format_response(response,
-                                              **parser)
+        parsed_result = self._format_response(response, **parser)
         return parsed_result
 
     def delete_building(self, building_id):
-        result_format = 'json'
-        url = self.hostname + f'buildings'
-        payload = {'building_id': building_id}
+        result_format = "json"
+        url = f"{self.hostname}buildings"
+        payload = {"building_id": building_id}
         response = self.delete(url, data=payload)
         parser = self._get_parser(result_format)
-        parsed_result = self._format_response(response,
-                                              **parser)
+        parsed_result = self._format_response(response, **parser)
         return parsed_result
 
-    def get_point_classes(self, point_class=None,
-                          is_active=True, result_format='pandas'):
-        url = self.hostname + f'point-classes'
-        params = {'point_class': point_class, 'is_active': is_active}
+    def get_point_classes(
+        self, point_class=None, is_active=True, result_format="pandas"
+    ):
+        url = f"{self.hostname}point-classes"
+        params = {"point_class": point_class, "is_active": is_active}
         response = self.get(url, data=params)
-        parser = self._get_parser(result_format, data_key='data')
+        parser = self._get_parser(result_format, data_key="data")
 
-        parsed_result = self._format_response(response,
-                                              **parser)
+        parsed_result = self._format_response(response, **parser)
         return parsed_result
 
     def put_point_class(self, point_class, point_class_id=None):
-        result_format = 'json'
-        url = self.hostname + f'point-classes'
-        payload = {'point_class_id': point_class_id,
-                   'point_class': point_class}
+        result_format = "json"
+        url = f"{self.hostname}point-classes"
+        payload = {"point_class_id": point_class_id, "point_class": point_class}
         response = self.put(url, data=payload)
         parser = self._get_parser(result_format)
-        parsed_result = self._format_response(response,
-                                              **parser)
+        parsed_result = self._format_response(response, **parser)
         return parsed_result
 
     def delete_point_class(self, point_class):
-        result_format = 'json'
-        url = self.hostname + f'point-classes'
-        payload = {'point_class': point_class}
+        result_format = "json"
+        url = f"{self.hostname}point-classes"
+        payload = {"point_class": point_class}
         response = self.delete(url, data=payload)
         parser = self._get_parser(result_format)
-        parsed_result = self._format_response(response,
-                                              **parser)
+        parsed_result = self._format_response(response, **parser)
         return parsed_result
 
-    def get_point_mapping(self,
-                          building_id,
-                          equipment_names=[],
-                          equipment_types=[],
-                          point_classes=[],
-                          eco_point_ids=[],
-                          display_names=[],
-                          native_names=[],
-                          point_class_expression=[],
-                          native_name_expression=[],
-                          display_name_expression=[],
-                          is_active=True,
-                          result_format='pandas'):
+    def get_point_mapping(
+        self,
+        building_id,
+        equipment_names=[],
+        equipment_types=[],
+        point_classes=[],
+        eco_point_ids=[],
+        display_names=[],
+        native_names=[],
+        point_class_expression=[],
+        native_name_expression=[],
+        display_name_expression=[],
+        is_active=True,
+        result_format="pandas",
+    ):
         """Return the point mapping for a building.
 
         API documentation:
@@ -969,84 +972,87 @@ class FactsService(BaseRequest):
             }
 
         """
-        url = self.hostname + f'building/{building_id}/point-mapping'
+        url = f"{self.hostname}building/{building_id}/point-mapping"
         data = {
-            'is_active': is_active,
-            'eco_point_id': ','.join(map(str, eco_point_ids)) or None,
-            'equipment_name': ','.join(map(str, equipment_names)) or None,
-            'equipment_type': ','.join(map(str, equipment_types)) or None,
-            'point_class': ','.join(map(str, point_classes)) or None,
-            'display_name': ','.join(map(str, display_names)) or None,
-            'native_name': ','.join(map(str, native_names)) or None,
-            'point_class_expression': ','.join(
-                map(str, point_class_expression)) or None,
-            'display_name_expression': ','.join(
-                map(str, display_name_expression)) or None,
-            'native_name_expression': ','.join(
-                map(str, native_name_expression)) or None}
+            "is_active": is_active,
+            "eco_point_id": ",".join(map(str, eco_point_ids)) or None,
+            "equipment_name": ",".join(map(str, equipment_names)) or None,
+            "equipment_type": ",".join(map(str, equipment_types)) or None,
+            "point_class": ",".join(map(str, point_classes)) or None,
+            "display_name": ",".join(map(str, display_names)) or None,
+            "native_name": ",".join(map(str, native_names)) or None,
+            "point_class_expression": ",".join(map(str, point_class_expression))
+            or None,
+            "display_name_expression": ",".join(map(str, display_name_expression))
+            or None,
+            "native_name_expression": ",".join(map(str, native_name_expression))
+            or None,
+        }
         response = self.get(url, data=data)
-        parser = self._get_parser(result_format, data_key='data')
+        parser = self._get_parser(result_format, data_key="data")
 
-        parsed_result = self._format_response(response,
-                                              **parser)
+        parsed_result = self._format_response(response, **parser)
         return parsed_result
 
     def delete_point_mapping(self, building_id, eco_point_ids=[]):
-        url = self.hostname + f'building/{building_id}/point-mapping'
-        payload = {'eco_point_id': eco_point_ids}
-        result_format = 'json'
-        response = self.delete(url, data=payload, encode_type='form')
+        url = self.hostname + f"building/{building_id}/point-mapping"
+        payload = {"eco_point_id": eco_point_ids}
+        result_format = "json"
+        response = self.delete(url, data=payload, encode_type="form")
         parser = self._get_parser(result_format)
-        parsed_result = self._format_response(response,
-                                              **parser)
+        parsed_result = self._format_response(response, **parser)
         return parsed_result
 
     def put_point_mapping(self, building_id, point_mapping=pd.DataFrame()):
-        url = self.hostname + f'building/{building_id}/point-mapping'
+        url = self.hostname + f"building/{building_id}/point-mapping"
         input_data = list(point_mapping.T.to_dict().values())
-        response = self.put(url, data=input_data, encode_type='json')
-        parser = self._get_parser(result_format='json')
-        parsed_result = self._format_response(response,
-                                              **parser)
+        response = self.put(url, data=input_data, encode_type="json")
+        parser = self._get_parser(result_format="json")
+        parsed_result = self._format_response(response, **parser)
         return parsed_result
 
-    def get_equipment_types(self, equipment_type=None,
-                            is_active=True, result_format='pandas'):
-        url = self.hostname + f'equipment-types'
-        params = {'equipment_type': equipment_type, 'is_active': is_active}
+    def get_equipment_types(
+        self, equipment_type=None, is_active=True, result_format="pandas"
+    ):
+        url = self.hostname + "equipment-types"
+        params = {"equipment_type": equipment_type, "is_active": is_active}
         response = self.get(url, data=params)
-        parser = self._get_parser(result_format, data_key='data')
+        parser = self._get_parser(result_format, data_key="data")
 
-        parsed_result = self._format_response(response,
-                                              **parser)
+        parsed_result = self._format_response(response, **parser)
         return parsed_result
 
     def delete_equipment_type(self, equipment_type):
-        url = self.hostname + f'equipment-types'
-        result_format = 'json'
-        params = {'equipment_type': equipment_type}
-        response = self.delete(url, data=params, encode_type='form')
+        url = self.hostname + "equipment-types"
+        result_format = "json"
+        params = {"equipment_type": equipment_type}
+        response = self.delete(url, data=params, encode_type="form")
         parser = self._get_parser(result_format)
 
-        parsed_result = self._format_response(response,
-                                              **parser)
+        parsed_result = self._format_response(response, **parser)
         return parsed_result
 
     def put_equipment_type(self, equipment_type, equipment_type_id=None):
-        url = self.hostname + f'equipment-types'
-        result_format = 'json'
-        payload = {'equipment_type': equipment_type,
-                   'equipment_type_id': equipment_type_id}
-        response = self.put(url, data=payload, encode_type='form')
+        url = self.hostname + "equipment-types"
+        result_format = "json"
+        payload = {
+            "equipment_type": equipment_type,
+            "equipment_type_id": equipment_type_id,
+        }
+        response = self.put(url, data=payload, encode_type="form")
         parser = self._get_parser(result_format)
 
-        parsed_result = self._format_response(response,
-                                              **parser)
+        parsed_result = self._format_response(response, **parser)
         return parsed_result
 
-    def get_equipment(self, building_id, equipment_name=None,
-                      equipment_type=None,
-                      is_active=True, result_format='pandas'):
+    def get_equipment(
+        self,
+        building_id,
+        equipment_name=None,
+        equipment_type=None,
+        is_active=True,
+        result_format="pandas",
+    ):
         """Return the equipments for a building.
 
         API documentation:
@@ -1147,42 +1153,41 @@ class FactsService(BaseRequest):
             }
 
         """
-        url = self.hostname + f'building/{building_id}/equipment'
-        params = {'equipment_type': equipment_type,
-                  'is_active': is_active,
-                  'equipment_name': equipment_name}
+        url = self.hostname + f"building/{building_id}/equipment"
+        params = {
+            "equipment_type": equipment_type,
+            "is_active": is_active,
+            "equipment_name": equipment_name,
+        }
         response = self.get(url, data=params)
-        parser = self._get_parser(result_format, data_key='data')
+        parser = self._get_parser(result_format, data_key="data")
 
-        parsed_result = self._format_response(response,
-                                              **parser)
+        parsed_result = self._format_response(response, **parser)
         return parsed_result
 
     def delete_equipment(self, building_id, equipments=[]):
-        url = self.hostname + f'building/{building_id}/equipment'
-        result_format = 'json'
-        payload = {'equipment_name': equipments}
-        response = self.delete(url, data=payload, encode_type='form')
+        url = self.hostname + f"building/{building_id}/equipment"
+        result_format = "json"
+        payload = {"equipment_name": equipments}
+        response = self.delete(url, data=payload, encode_type="form")
         parser = self._get_parser(result_format)
 
-        parsed_result = self._format_response(response,
-                                              **parser)
+        parsed_result = self._format_response(response, **parser)
         return parsed_result
 
     def put_equipment(self, building_id, equipments=pd.DataFrame()):
-        url = self.hostname + f'building/{building_id}/equipment'
-        result_format = 'json'
+        url = self.hostname + f"building/{building_id}/equipment"
+        result_format = "json"
         input_data = list(equipments.T.to_dict().values())
-        response = self.put(url, data=input_data, encode_type='json')
+        response = self.put(url, data=input_data, encode_type="json")
         parser = self._get_parser(result_format)
 
-        parsed_result = self._format_response(response,
-                                              **parser)
+        parsed_result = self._format_response(response, **parser)
         return parsed_result
 
-    def get_native_names(self, building_id,
-                         native_name=None,
-                         is_active=True, result_format='pandas'):
+    def get_native_names(
+        self, building_id, native_name=None, is_active=True, result_format="pandas"
+    ):
         """Return the native names for a building.
 
         API documentation:
@@ -1300,145 +1305,142 @@ class FactsService(BaseRequest):
                }
 
         """
-        url = self.hostname + f'building/{building_id}/native-names'
-        params = {'native_name': native_name,
-                  'is_active': is_active}
+        url = self.hostname + f"building/{building_id}/native-names"
+        params = {"native_name": native_name, "is_active": is_active}
         response = self.get(url, data=params)
-        parser = self._get_parser(result_format, data_key='data')
+        parser = self._get_parser(result_format, data_key="data")
 
-        parsed_result = self._format_response(response,
-                                              **parser)
+        parsed_result = self._format_response(response, **parser)
         return parsed_result
 
     def put_native_names(self, building_id, native_names=pd.DataFrame()):
-        url = self.hostname + f'building/{building_id}/native-names'
-        result_format = 'json'
+        url = self.hostname + f"building/{building_id}/native-names"
+        result_format = "json"
         input_data = list(native_names.T.to_dict().values())
-        response = self.put(url, data=input_data, encode_type='json')
+        response = self.put(url, data=input_data, encode_type="json")
         parser = self._get_parser(result_format)
 
-        parsed_result = self._format_response(response,
-                                              **parser)
+        parsed_result = self._format_response(response, **parser)
         return parsed_result
 
     def delete_native_names(self, building_id, native_names=[]):
-        url = self.hostname + f'building/{building_id}/native-names'
-        result_format = 'json'
-        payload = {'native_name': native_names}
-        response = self.delete(url, data=payload, encode_type='form')
+        url = self.hostname + f"building/{building_id}/native-names"
+        result_format = "json"
+        payload = {"native_name": native_names}
+        response = self.delete(url, data=payload, encode_type="form")
         parser = self._get_parser(result_format)
 
-        parsed_result = self._format_response(response,
-                                              **parser)
+        parsed_result = self._format_response(response, **parser)
         return parsed_result
 
     def get_native_names_history(self, building_id):
-        url = self.hostname + f'building/{building_id}/native-name-history'
-        result_format = 'json'
+        url = self.hostname + f"building/{building_id}/native-name-history"
+        result_format = "json"
         response = self.get(url)
         parser = self._get_parser(result_format)
 
-        parsed_result = self._format_response(response,
-                                              **parser)
+        parsed_result = self._format_response(response, **parser)
         return parsed_result
 
     def get_unmapped_native_names(self, building_id):
-        url = self.hostname + f'building/{building_id}/unmapped-native-names'
-        result_format = 'json'
+        url = self.hostname + f"building/{building_id}/unmapped-native-names"
+        result_format = "json"
         response = self.get(url)
         parser = self._get_parser(result_format)
 
-        parsed_result = self._format_response(response,
-                                              **parser)
+        parsed_result = self._format_response(response, **parser)
         return parsed_result
 
     def get_etl_process_history(self, building_id, return_limit=None):
-        url = self.hostname + f'building/{building_id}/etl-process-history'
-        result_format = 'json'
-        response = self.get(url, data={'return_limit': return_limit})
+        url = self.hostname + f"building/{building_id}/etl-process-history"
+        result_format = "json"
+        response = self.get(url, data={"return_limit": return_limit})
         parser = self._get_parser(result_format)
 
-        parsed_result = self._format_response(response,
-                                              **parser)
+        parsed_result = self._format_response(response, **parser)
         return parsed_result
 
     def get_unstored_native_names(self, building_id):
-        url = self.hostname + f'building/{building_id}/unstored-native-names'
-        result_format = 'json'
+        url = self.hostname + f"building/{building_id}/unstored-native-names"
+        result_format = "json"
         response = self.get(url)
         parser = self._get_parser(result_format)
 
-        parsed_result = self._format_response(response,
-                                              **parser)
+        parsed_result = self._format_response(response, **parser)
         return parsed_result
 
-    def get_last_native_name_record(self, building_id, native_name,
-                                    max_time=None):
-        url = self.hostname + f'building/{building_id}/last-native-name-record'
-        result_format = 'json'
-        response = self.get(url, data={'native_name': native_name,
-                                       'max_time': max_time})
+    def get_last_native_name_record(self, building_id, native_name, max_time=None):
+        url = self.hostname + f"building/{building_id}/last-native-name-record"
+        result_format = "json"
+        response = self.get(
+            url, data={"native_name": native_name, "max_time": max_time}
+        )
         parser = self._get_parser(result_format)
 
-        parsed_result = self._format_response(response,
-                                              **parser)
+        parsed_result = self._format_response(response, **parser)
         return parsed_result
 
-    def get_building_dqi(self, building_id, start_date, end_date,
-                         dqi_aggregate='building_id', period='day',
-                         native_name_expression='.*', result_format='pandas'):
-        url = self.hostname + f'building/{building_id}/dqi'
-        params = {'start_date': start_date,
-                  'end_date': end_date,
-                  'dqi_aggregate': dqi_aggregate,
-                  'period': period,
-                  'native_name_expression': native_name_expression}
+    def get_building_dqi(
+        self,
+        building_id,
+        start_date,
+        end_date,
+        dqi_aggregate="building_id",
+        period="day",
+        native_name_expression=".*",
+        result_format="pandas",
+    ):
+        url = self.hostname + f"building/{building_id}/dqi"
+        params = {
+            "start_date": start_date,
+            "end_date": end_date,
+            "dqi_aggregate": dqi_aggregate,
+            "period": period,
+            "native_name_expression": native_name_expression,
+        }
         response = self.get(url, data=params)
-        if result_format.lower() == 'pandas':
-            parser_args = {'data_key': 'data'}
+        if result_format.lower() == "pandas":
+            parser_args = {"data_key": "data"}
             dqi_parser = self._pandas_dqi_parser
-        elif result_format.lower() == 'json':
+        elif result_format.lower() == "json":
             dqi_parser = RequestParser.json_parser
             parser_args = {}
-        elif result_format.lower() == 'tuple':
+        elif result_format.lower() == "tuple":
             dqi_parser = self._tuple_dqi_parser
-            parser_args = {'data_key': 'data'}
-        elif result_format.lower() == 'csv':
+            parser_args = {"data_key": "data"}
+        elif result_format.lower() == "csv":
             dqi_parser = self._csv_dqi_parser
-            parser_args = {'data_key': 'data'}
+            parser_args = {"data_key": "data"}
         else:
-            raise ValueError(f'{result_format} is not valid!')
+            raise ValueError(f"{result_format} is not valid!")
 
-        parsed_result = self._format_response(response,
-                                              parser=dqi_parser,
-                                              parser_args=parser_args)
+        parsed_result = self._format_response(
+            response, parser=dqi_parser, parser_args=parser_args
+        )
         return parsed_result
 
-    def _tuple_dqi_parser(self, response, data_key='data'):
+    def _tuple_dqi_parser(self, response, data_key="data"):
         try:
             result = response.json()
         except (ValueError):
-            raise RequestParserError('Unable to parse the response.',
-                                     response.text)
+            raise RequestParserError("Unable to parse the response.", response.text)
 
         result = result[data_key]
 
-        tuple_names = ['aggregate', 'timestamp', 'dqi']
+        tuple_names = ["aggregate", "timestamp", "dqi"]
 
-        response_tuple = namedtuple('response_tuple', tuple_names)
+        response_tuple = namedtuple("response_tuple", tuple_names)
         parsed_result = []
         for aggregate, data in result.items():
             for timestamp, dqi in data.items():
-                row = {'timestamp': timestamp,
-                       'dqi': dqi,
-                       'aggregate': aggregate}
+                row = {"timestamp": timestamp, "dqi": dqi, "aggregate": aggregate}
                 parsed_result.append(response_tuple(**row))
-        return sorted(parsed_result, key=attrgetter('aggregate'))
+        return sorted(parsed_result, key=attrgetter("aggregate"))
 
-    def _pandas_dqi_parser(self, response, data_key='data'):
+    def _pandas_dqi_parser(self, response, data_key="data"):
         parsed_tuples = self._tuple_dqi_parser(response, data_key)
         return pd.DataFrame(parsed_tuples)
 
-    def _csv_dqi_parser(self, response, data_key='data'):
+    def _csv_dqi_parser(self, response, data_key="data"):
         parsed_df = self._pandas_dqi_parser(response, data_key)
         return parsed_df.to_csv(index=None)
