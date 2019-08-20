@@ -8,6 +8,11 @@ pandas = "*"
 requests = "*"
 
 [dev-packages]
-coveralls = "*"
-pytest = ">=2.8.0"
+black = "==19.3b0"
+codecov = "*"
+pytest = "*"
+pytest-cov = "*"
 pytest-mock = "*"
+
+[requires]
+python_version = "3.7"

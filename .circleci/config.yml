@@ -1,0 +1,27 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/python
+        environment:
+          PIPENV_VENV_IN_PROJECT: true
+    steps:
+      - checkout
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.*/site-packages
+      - restore_cache:
+          key: deps-{{ checksum "Pipfile.lock" }}
+      - run:
+          name: Install dependencies in virtual environment
+          command: pipenv install --dev
+      - save_cache:
+          key: deps-{{ checksum "Pipfile.lock" }}
+          paths:
+            - ".venv"
+            - "/usr/local/bin"
+            - "/usr/local/lib/python3.*/site-packages"
+      - run:
+          name: Run tests and send coverage report
+          command: |
+            pipenv run python -m pytest --cov=eco_connect
+            pipenv run codecov

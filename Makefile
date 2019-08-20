@@ -5,7 +5,7 @@ init:
 	pipenv install --dev --skip-lock
 
 test:
-	coverage run -m pytest
+	py.test --cov-report=xml --cov=eco_connect tests/
 
 publish:
 	pip install 'twine>=1.5.0'

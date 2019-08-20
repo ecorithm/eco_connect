@@ -1,5 +1,5 @@
 pin: False
-schedule: "every week"
+schedule: "every month"
 requirements:
   - Pipfile
   - Pipfile.lock
