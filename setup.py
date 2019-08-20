@@ -5,7 +5,7 @@ with open("README.rst", "r") as f:
 
 setup(
     name="eco-connect",
-    version="0.24.3",
+    version="0.24.4",
     description="Ecorithm's connector to Facts Service",
     long_description=readme,
     long_description_content_type="text/x-rst",
@@ -13,7 +13,7 @@ setup(
     author_email="support@ecorithm.com",
     url="https://ecorithm.com",
     packages=find_packages(),
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     install_requires=["pandas", "requests"],
     license="MIT",
     classifiers=[
@@ -21,7 +21,6 @@ setup(
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Natural Language :: English",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3 :: Only",
         "Topic :: Scientific/Engineering",
