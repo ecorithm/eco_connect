@@ -1,18 +1,25 @@
 [[source]]
+
 url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
 
+
 [packages]
+
 pandas = "*"
 requests = "*"
 
+
 [dev-packages]
-black = "==19.3b0"
+
+black = "==19.10b0"
 codecov = "*"
 pytest = "*"
 pytest-cov = "*"
 pytest-mock = "*"
 
+
 [requires]
+
 python_version = "3.7"
